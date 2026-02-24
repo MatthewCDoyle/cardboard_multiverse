@@ -1,0 +1,106 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #6f2dbd;
+  --ifm-color-primary-dark: #5a189a;
+  --ifm-color-primary-darker: #53178f;
+  --ifm-color-primary-darkest: #461272;
+  --ifm-color-primary-light: #7b2cbf;
+  --ifm-color-primary-lighter: #8f5ad6;
+  --ifm-color-primary-lightest: #a06cd5;
+
+  --cm-brand-primary: #6f2dbd;
+  --cm-brand-primary-strong: #5a189a;
+  --cm-brand-accent: #b185db;
+  --cm-brand-accent-strong: #8f5ad6;
+  --cm-text-primary: #191919;
+  --cm-text-muted: #5c5f62;
+  --cm-surface: #ffffff;
+  --cm-surface-soft: #f7f8fa;
+  --cm-border: #d9d9d9;
+  --cm-header-footer-bg: #f9f1e9;
+  --cm-header-footer-text: #191919;
+
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #8f5ad6;
+  --ifm-color-primary-dark: #7b2cbf;
+  --ifm-color-primary-darker: #6f2dbd;
+  --ifm-color-primary-darkest: #5a189a;
+  --ifm-color-primary-light: #a06cd5;
+  --ifm-color-primary-lighter: #b185db;
+  --ifm-color-primary-lightest: #cdb4f6;
+
+  --cm-text-primary: #f2f2f2;
+  --cm-text-muted: #b7bbc0;
+  --cm-surface: #1f2328;
+  --cm-surface-soft: #262b31;
+  --cm-border: #3b424a;
+  --cm-header-footer-bg: #1f2328;
+  --cm-header-footer-text: #f2f2f2;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+body {
+  color: var(--cm-text-primary);
+}
+
+.hero {
+  background: linear-gradient(135deg, var(--cm-surface-soft) 0%, var(--cm-surface) 100%);
+  color: var(--cm-text-primary);
+}
+
+.button--primary,
+.button--secondary {
+  border-radius: 10px;
+}
+
+.navbar,
+.footer {
+  background-color: var(--cm-header-footer-bg);
+}
+
+.navbar__title,
+.navbar__link,
+.navbar__toggle,
+.navbar__brand {
+  color: var(--cm-header-footer-text);
+}
+
+.navbar__logo img {
+  height: 44px;
+  width: auto;
+}
+
+.navbar__link:hover,
+.navbar__link--active,
+.navbar__title:hover {
+  color: var(--cm-brand-primary);
+}
+
+.footer,
+.footer a,
+.footer__title,
+.footer__copyright {
+  color: var(--cm-header-footer-text);
+}
+
+.footer__bottom {
+  text-align: center;
+}
+
+.footer__logo {
+  display: block;
+  max-width: 140px;
+  height: auto;
+  margin: 0 auto 1rem;
+}
