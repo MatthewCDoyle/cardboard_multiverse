@@ -4,7 +4,7 @@
   background: linear-gradient(135deg, #f7f8fa 0%, #ffffff 100%);
   padding: 4rem 2rem 3rem;
   text-align: center;
-  color: #191919;
+  color: #fff;
   border-bottom: 1px solid #d9d9d9;
 }
 
@@ -17,6 +17,7 @@
   font-size: 2.5rem;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: #191919;
 }
 
 .heroSubtitle {
@@ -230,7 +231,7 @@
   top: 1rem;
   left: 1rem;
   background: linear-gradient(135deg, #b185db 0%, #8f5ad6 100%);
-  color: #191919;
+  color: #fff;
   padding: 0.5rem 1rem;
   border-radius: 20px;
   font-size: 0.875rem;
@@ -330,7 +331,7 @@
   margin-top: 0.75rem;
   padding: 0.75rem 1.5rem;
   background: linear-gradient(135deg, #6f2dbd 0%, #5a189a 100%);
-  color: #fff;
+  color: #191919;
   border: none;
   border-radius: 8px;
   font-weight: 600;

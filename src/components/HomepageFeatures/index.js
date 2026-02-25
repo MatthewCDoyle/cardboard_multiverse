@@ -1,67 +1,77 @@
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
+
 import styles from './styles.module.css';
+import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 
 const FeatureList = [
   {
     title: 'Fresh eBay Inventory',
-    Svg: (props) => (
-      <img
-        src={require('@site/static/img/cm-new-inventory.png').default}
-        alt="Fresh eBay inventory"
-        {...props}
-      />
-    ),
+    image: '/img/cm-new-inventory.png',
+    alt: 'Fresh eBay inventory',
     description: (
       <>
         Browse active listings from Cardboard Multiverse with pricing, bids, and
         direct links to each eBay item.
       </>
     ),
+    cta: {
+      label: 'Visit Our Store!',
+      to: '/store',
+    },
   },
   {
     title: 'Collector Resources',
-    Svg: (props) => (
-      <img
-        src={require('@site/static/img/cm-resources.png').default}
-        alt="Collector resources"
-        {...props}
-      />
-    ),
+    image: '/img/cm-resources.png',
+    alt: 'Collector resources',
     description: (
       <>
         Use practical guides, templates, and articles focused on grading,
         valuation, and building stronger collections.
       </>
     ),
+    cta: {
+      label: 'Check out our Resources!',
+      to: '/docs/cm-article-appendix-resources-and-affiliates',
+    },
   },
   {
     title: 'Market-Focused Tracking',
-    Svg: (props) => (
-      <img
-        src={require('@site/static/img/cm-cardboard-tracking.png').default}
-        alt="Market-focused tracking"
-        {...props}
-      />
-    ),
+    image: '/img/cm-cardboard-tracking.png',
+    alt: 'Market-focused tracking',
     description: (
       <>
         Follow trends and top sellers across major sports with tools built for
         card collectors and flippers.
       </>
     ),
+    cta: {
+      label: 'Track Your Cards!',
+      to: '/card-tracker',
+    },
   },
 ];
 
-function Feature({Svg, title, description}) {
+function Feature({image, alt, title, description, cta}) {
+  const imgUrl = useBaseUrl(image);
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <Svg className={styles.featureSvg} role="img" />
+        <img className={styles.featureSvg} src={imgUrl} alt={alt} />
       </div>
       <div className="text--center padding-horiz--md">
         <Heading as="h3">{title}</Heading>
         <p>{description}</p>
+        <div style={{ marginTop: '1rem' }}>
+          <Link
+            className="button button--lg"
+            style={{ background: 'rebeccapurple', color: 'white', border: 'none' }}
+            to={cta.to}
+          >
+            {cta.label}
+          </Link>
+        </div>
       </div>
     </div>
   );

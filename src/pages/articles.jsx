@@ -124,13 +124,13 @@ export default function ArticlesPage() {
 
   return (
     <Layout
-      title="Articles & Newsletter"
+      title="Articles & Newsletters"
       description="Expert insights, market analysis, and collecting tips from industry professionals"
     >
       {/* Hero Section */}
       <div className={styles.hero}>
         <div className={styles.heroContent}>
-          <h1 className={styles.heroTitle}>Articles & Newsletter</h1>
+          <h1 className={styles.heroTitle}>Articles & Newsletters</h1>
           <p className={styles.heroSubtitle}>
             Expert insights, market analysis, and the latest trends in sports card collecting
           </p>

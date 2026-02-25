@@ -26,21 +26,23 @@ export default function StorePage() {
           href="https://www.ebay.com/usr/cardboardmult1verse"
           target="_blank"
           rel="noopener noreferrer"
+          className="button button--lg"
           style={{
             display: 'inline-block',
             marginTop: '1.5rem',
             padding: '0.75rem 2rem',
-            background: '#0064d2',
-            color: '#fff',
+            background: 'rebeccapurple',
+            color: 'white',
             borderRadius: '6px',
             fontWeight: 600,
             fontSize: '1.1rem',
             textDecoration: 'none',
             boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            border: 'none',
             transition: 'background 0.2s',
           }}
-          onMouseOver={e => e.currentTarget.style.background = '#014fa2'}
-          onMouseOut={e => e.currentTarget.style.background = '#0064d2'}
+          onMouseOver={e => e.currentTarget.style.background = '#7c3fa7'}
+          onMouseOut={e => e.currentTarget.style.background = 'rebeccapurple'}
         >
           Visit Our eBay Store
         </a>

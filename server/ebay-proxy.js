@@ -41,6 +41,11 @@ const APP_ID = process.env.EBAY_APP_ID;
 const DEV_ID = process.env.EBAY_DEV_ID;
 const CERT_ID = process.env.EBAY_CERT_ID;
 
+console.log('[eBay Proxy] Loaded credentials:');
+console.log('  EBAY_APP_ID:', APP_ID);
+console.log('  EBAY_DEV_ID:', DEV_ID);
+console.log('  EBAY_CERT_ID:', CERT_ID);
+
 const writeJson = (req, res, statusCode, payload) => {
   const requestOrigin = req.headers.origin;
   const allowOrigin = typeof requestOrigin === 'string' && requestOrigin.length > 0
@@ -98,6 +103,7 @@ const requestCompletedItems = async ({ player, sport, days }) => {
     if (!response.ok || ack === 'Failure') {
       const apiMessage = apiPayload?.errorMessage?.[0]?.error?.[0]?.message?.[0]
         || 'eBay API request failed.';
+      console.error('[eBay Proxy] Full error response:', JSON.stringify(body, null, 2));
       throw new Error(apiMessage);
     }
 
