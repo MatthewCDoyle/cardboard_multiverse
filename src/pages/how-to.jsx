@@ -12,93 +12,83 @@ const CATEGORIES = [
   { id: 'valuation', name: 'Valuation', icon: FileText },
 ];
 
-// Sample Guides Data
-const GUIDES = [
-  {
-    id: 1,
-    title: 'Complete Guide to PSA Grading',
-    description: 'Learn how to submit cards for PSA grading, understand grading criteria, and maximize your card values.',
-    category: 'grading',
-    type: 'pdf',
-    downloadUrl: '/guides/psa-grading-guide.pdf',
-    lastUpdated: '2024-01-15',
-    views: 1243,
-    featured: true
-  },
-  {
-    id: 2,
-    title: 'How to Identify Rookie Cards',
-    description: 'Step-by-step guide to identifying authentic rookie cards and avoiding common counterfeits.',
-    category: 'buying',
-    type: 'article',
-    readTime: '8 min',
-    lastUpdated: '2024-02-10',
-    views: 892,
-    featured: true
-  },
-  {
-    id: 3,
-    title: 'Card Storage Best Practices',
-    description: 'Protect your investment with proper storage techniques, humidity control, and organization systems.',
-    category: 'storage',
-    type: 'pdf',
-    downloadUrl: '/guides/storage-guide.pdf',
-    lastUpdated: '2024-01-20',
-    views: 756
-  },
-  {
-    id: 4,
-    title: 'Using eBay Sold Listings for Valuation',
-    description: 'Master the art of pricing your cards using eBay\'s completed listings and market trends.',
-    category: 'valuation',
-    type: 'video',
-    videoUrl: 'https://youtube.com/watch?v=example',
-    duration: '12:34',
-    lastUpdated: '2024-02-01',
-    views: 2103
-  },
-  {
-    id: 5,
-    title: 'BGS vs PSA: Which to Choose?',
-    description: 'Compare grading services, costs, turnaround times, and which is best for different card types.',
-    category: 'grading',
-    type: 'article',
-    readTime: '6 min',
-    lastUpdated: '2024-01-28',
-    views: 1456
-  },
-  {
-    id: 6,
-    title: 'Negotiating on Card Sales',
-    description: 'Tips and templates for making offers, counteroffers, and closing deals on high-value cards.',
-    category: 'buying',
-    type: 'pdf',
-    downloadUrl: '/guides/negotiation-templates.pdf',
-    lastUpdated: '2024-02-05',
-    views: 634,
-    featured: true
-  },
-  {
-    id: 7,
-    title: 'Top Loader vs One Touch Holders',
-    description: 'Which protection method is right for your cards? Complete comparison guide.',
-    category: 'storage',
-    type: 'article',
-    readTime: '5 min',
-    lastUpdated: '2024-01-18',
-    views: 445
-  },
-  {
-    id: 8,
-    title: 'Vintage Card Valuation Checklist',
-    description: 'Downloadable checklist for assessing condition and value of pre-1980 sports cards.',
-    category: 'valuation',
-    type: 'pdf',
-    downloadUrl: '/guides/vintage-checklist.pdf',
-    lastUpdated: '2024-01-12',
-    views: 823
-  },
-];
+// Article content types that are relevant to a how-to guides page
+const INCLUDED_CONTENT_TYPES = new Set([
+  'how-to', 'guide', 'reference', 'checklist',
+  'decision-tool', 'collecting-tips', 'investment-tips', 'analysis',
+  'industry-news',
+]);
+
+// Map contentType → how-to category
+const CONTENT_TYPE_TO_HOWTO_CATEGORY = {
+  'decision-tool': 'grading',
+  'industry-news': 'grading',
+  'how-to': 'buying',
+  'guide': 'buying',
+  'collecting-tips': 'buying',
+  'investment-tips': 'valuation',
+  'reference': 'valuation',
+  'checklist': 'storage',
+  'analysis': 'valuation',
+};
+
+// Per-article category overrides keyed by the last segment of the docs ID
+const SLUG_CATEGORY_OVERRIDE = {
+  'cm-article-shipping-cards': 'storage',
+  'cm-article-suggested-supplies': 'storage',
+  'cm-article-inventory-management': 'buying',
+};
+
+// Docs article IDs to pin as featured on the how-to page
+const FEATURED_GUIDE_IDS = new Set([
+  'articles/CardboardMultiverse_QuickStart',
+  'articles/cm-article-grading-services',
+  'articles/cm-article-determining-card-value-and-comps',
+  'articles/cm-article-beware-of-rogue-tactics',
+]);
+
+const docsArticlesContext = require.context(
+  '@generated/docusaurus-plugin-content-docs/default',
+  false,
+  /^\.\/site-docs-articles-.*\.json$/,
+);
+
+const GUIDES = docsArticlesContext
+  .keys()
+  .map((key) => {
+    const metadata = docsArticlesContext(key);
+    const frontMatter = metadata.frontMatter || {};
+    const contentType = (frontMatter.contentType || '').toLowerCase();
+    const isFeatured = FEATURED_GUIDE_IDS.has(metadata.id);
+
+    if (!INCLUDED_CONTENT_TYPES.has(contentType) && !isFeatured) {
+      return null;
+    }
+
+    const idSlug = metadata.id.split('/').pop();
+    const category =
+      SLUG_CATEGORY_OVERRIDE[idSlug] ||
+      CONTENT_TYPE_TO_HOWTO_CATEGORY[contentType] ||
+      'buying';
+
+    return {
+      id: metadata.id,
+      title: metadata.title,
+      description: metadata.description || frontMatter.description || '',
+      category,
+      type: 'article',
+      readTime: frontMatter.readTime || frontMatter.estimatedReadTime || '5 min read',
+      lastUpdated: frontMatter.lastUpdated || frontMatter.publishDate || null,
+      views: Number(frontMatter.views) || 0,
+      featured: isFeatured,
+      permalink: metadata.permalink,
+    };
+  })
+  .filter(Boolean)
+  .sort((a, b) => {
+    if (a.featured !== b.featured) return a.featured ? -1 : 1;
+    return b.views - a.views;
+  });
 
 // Templates Data
 const TEMPLATES = [
@@ -124,6 +114,13 @@ const TEMPLATES = [
     downloadUrl: '/templates/sales-tracker.xlsx'
   },
 ];
+
+const formatLastUpdated = (dateValue) => {
+  if (!dateValue) return 'Recently updated';
+  const d = new Date(dateValue);
+  if (Number.isNaN(d.getTime())) return 'Recently updated';
+  return `Updated ${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+};
 
 export default function HowToPage() {
     const getTypeBadgeClass = (type) => {
@@ -208,7 +205,7 @@ export default function HowToPage() {
                     <span className={styles.metaItem}>{guide.views} views</span>
                   </div>
                   <a 
-                    href={guide.downloadUrl || guide.videoUrl || `/guides/${guide.id}`}
+                    href={guide.permalink || guide.downloadUrl || guide.videoUrl}
                     className={styles.guideButton}
                     target={guide.type === 'pdf' || guide.type === 'video' ? '_blank' : undefined}
                     rel={guide.type === 'pdf' || guide.type === 'video' ? 'noopener noreferrer' : undefined}
@@ -275,10 +272,10 @@ export default function HowToPage() {
                       {guide.type === 'video' ? guide.duration : guide.readTime || 'Download'}
                     </span>
                     <span className={styles.metaItem}>{guide.views} views</span>
-                    <span className={styles.metaItem}>Updated {new Date(guide.lastUpdated).toLocaleDateString()}</span>
+                    <span className={styles.metaItem}>{formatLastUpdated(guide.lastUpdated)}</span>
                   </div>
                   <a 
-                    href={guide.downloadUrl || guide.videoUrl || `/guides/${guide.id}`}
+                    href={guide.permalink || guide.downloadUrl || guide.videoUrl}
                     className={styles.guideButton}
                     target={guide.type === 'pdf' || guide.type === 'video' ? '_blank' : undefined}
                     rel={guide.type === 'pdf' || guide.type === 'video' ? 'noopener noreferrer' : undefined}

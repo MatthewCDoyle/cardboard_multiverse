@@ -1,0 +1,335 @@
+---
+title: "Cardboard Multiverse — Quick Start Guide"
+slug: "cardboard-multiverse-quick-start-guide"
+contentType: guide
+status: published
+publishedAt: ""
+updatedAt: "2026-03-01"
+
+archetypes:
+  - analyst
+  - opportunist
+  - completist
+  - prospector
+funnel: conversion
+
+sport:
+  - basketball
+  - football
+  - baseball
+cardEra:
+  - vintage
+  - modern
+  - ultra-modern
+players: []
+cardSets: []
+topics:
+  - spreadsheet
+  - grading-roi
+  - inventory-management
+  - portfolio-risk
+  - prospecting
+  - tools
+
+seo:
+  metaTitle: "Cardboard Multiverse Quick Start Guide: The Card Collector's Operating System"
+  metaDescription: "Complete walkthrough of the Cardboard Multiverse spreadsheet — 8 tabs covering flips, grading ROI, empire-builder inventory, risk dashboard, and prospector scorecard."
+  focusKeyword: "Cardboard Multiverse spreadsheet quick start guide"
+  secondaryKeywords:
+    - "sports card tracking spreadsheet"
+    - "grading ROI calculator spreadsheet"
+    - "sports card inventory management tool"
+    - "card collector operating system"
+  ogImage: "/images/og/cardboard-multiverse-quick-start.jpg"
+
+storeLinks:
+  - label: "Browse our store — built using these exact systems"
+    url: "https://www.ebay.com/str/cardboardmult1verse"
+    context: "Users of the spreadsheet who want to see it applied to a real operation"
+
+author: "Cardboard Manifest Destiny"
+excerpt: "The Cardboard Multiverse spreadsheet is a complete business system for card collectors. Eight purpose-built tabs covering flip tracking, grading ROI analysis, empire-builder inventory, risk monitoring, and prospect scoring. This walkthrough tells you exactly what to enter and what every formula does."
+featuredImage:
+  src: "/images/articles/cardboard-multiverse-quick-start.jpg"
+  alt: "Screenshot of the Cardboard Multiverse spreadsheet showing multiple tabs including Grading ROI and Empire Builder"
+  caption: "The operating system for serious card collectors."
+
+description: "The complete walkthrough for the Card Collector's Operating System spreadsheet."
+version: "3.0"
+---
+
+import { Callout } from '@site/src/components/ui/callout'
+
+# Cardboard Multiverse
+### The Complete Card Collector's Operating System
+**Quick Start Guide · v3.0**
+
+---
+
+## What Is This Spreadsheet?
+
+The Cardboard Multiverse spreadsheet is a complete business system for card collectors — whether you flip one card a month or run a full dealer operation. It has 8 tabs, each built for a specific job. This guide walks you through every tab, tells you exactly what to enter, and explains what the formulas do automatically.
+
+| Tab | What It Does | Who It's For |
+|-----|-------------|--------------|
+| 🏠 Welcome | Rules, color guide, navigation | Everyone — read first |
+| 📊 Master Data | Benchmark gem rates & PSA 10 values | Reference — update monthly |
+| 💰 Self-Sustaining | Track flips, auto-deduct eBay fees | Casual to mid-level flippers |
+| 🔬 Grading ROI Analyst | Run the 2x Rule before you send to PSA | Graders & submitters |
+| 🏛️ Empire Builder | SKU inventory with velocity & margin tracking | Dealers & power sellers |
+| 🧭 Risk Dashboard | Monitor portfolio concentration limits | Serious collectors & investors |
+| 📈 Charts | Auto-updating visual summaries | Everyone |
+| 🎯 Prospector Scorecard | Score rookies before you buy | Prospect hunters |
+
+---
+
+## Before You Start — Colour Coding Key
+
+Every cell in this spreadsheet follows a consistent colour system. Learn it once and you'll never be confused about what to do.
+
+| Colour | Meaning |
+|--------|---------|
+| 🔵 **Blue text** | Input cell — this is where **you** type. No other cells need editing. |
+| ⚫ **Black text** | Formula — calculated automatically. Do not overwrite. |
+| 🟢 **Green** | Healthy / Pass / Profit / Safe — you're in good shape. |
+| 🔴 **Red** | Warning / Fail / Loss / Over-concentrated — action needed. |
+| 🟡 **Yellow** | Caution / Watch / Borderline — keep an eye on it. |
+| 🟣 **Purple rows** | Alternating row highlight — no special meaning, just readability. |
+
+---
+
+## The Five Rules — Know These Cold
+
+Every formula in this spreadsheet enforces one of these five rules. Understanding them makes the tool make sense.
+
+<Callout type="info">
+**✌️ The 2x Rule**
+
+Your Target PSA 10 value must be **more than 2×** your total cost-in (raw card + grading fee). If the math doesn't work, don't grade it. The Grading ROI Analyst tab enforces this automatically.
+</Callout>
+
+<Callout type="warning">
+**⚠️ The 9 Penalty**
+
+A PSA 9 is not a consolation prize — it's often a losing ticket. Your PSA 9 value must still cover your full cost-in or you lose money. The "9 Penalty" column on the Grading ROI Analyst tab flags this automatically.
+</Callout>
+
+<Callout type="info">
+**📊 The 20/30/50/60 Rule**
+
+No single card > 20% of portfolio. No single player > 30%. No single sport > 50%. No single era > 60%. The Risk Dashboard monitors all four automatically.
+</Callout>
+
+<Callout type="info">
+**💸 The eBay Fee Rule**
+
+Standard eBay fee is 13.25% of sale price. Always deduct this before counting profit. The Self-Sustaining tab does this automatically — your Net Profit column is already fee-adjusted.
+</Callout>
+
+<Callout type="error">
+**⏱️ The 75-Day Rule**
+
+If a card sits in your inventory for more than 75 days, re-price it or liquidate. Dead capital kills momentum. The Empire Builder tab turns velocity red at 75 days and yellow at 50 as an early warning.
+</Callout>
+
+---
+
+## Tab-by-Tab Guide
+
+### 📊 Master Data
+
+This tab is a read-only reference. It shows PSA population data, gem rates, and current market values for 8 key benchmark cards. Use it to calibrate your intuition about what makes a card worth grading.
+
+**What to do:**
+- **Nothing on first use** — the data is pre-loaded from current PSA population reports.
+- **Update monthly** — gem rates and target values shift as more cards get graded. Check PSA's population report and revise the numbers in column D (Gem Rate) and column E (Target PSA 10 $).
+
+<Callout type="tip">
+**💡 Pro Tip**
+
+The Gem Rate column is the most important number on this tab. A card with a 0.008% gem rate (Mantle 1964) is a fundamentally different investment than one with a 64% gem rate (Wembanyama 2023). Low gem rate = high scarcity premium.
+</Callout>
+
+---
+
+### 💰 Self-Sustaining Collector
+
+This is your flip journal. Every buy and sell goes here. The sheet auto-calculates your net profit after eBay fees and allocates a portion to your Personal Collection (PC) fund.
+
+**What to enter (blue cells only):**
+- **Date** — when you acquired the card
+- **Description** — card name, year, brand, grade
+- **All-In Cost ($)** — everything you paid: card price, shipping, fees
+- **Sale Price ($)** — your actual eBay (or other platform) selling price
+- **PC Fund %** — what % of your profit to set aside for your personal collection. Default is 50%.
+
+**What calculates automatically:**
+- **Net Profit ($)** — Sale Price minus All-In Cost minus 13.25% eBay fee
+- **PC Fund $** — your profit multiplied by your PC Fund %
+- **Status** — shows 🔵 Listed while Sale Price is blank, then ✅ Sold once filled
+
+<Callout type="tip">
+**💡 Pro Tip**
+
+Leave the Sale Price blank until the card actually sells. The Status column will show 🔵 Listed automatically, and your summary KPIs will only count completed sales.
+</Callout>
+
+---
+
+### 🔬 Grading ROI Analyst
+
+Run every card through the 2x Rule before you send it to PSA. This tab tells you whether a card is worth grading, and flags the hidden risk of receiving a PSA 9 instead of a 10.
+
+**What to enter (blue cells only):**
+- **Card Description** — name, year, set
+- **Raw Cost ($)** — what you paid for the ungraded card
+- **Grading Fee ($)** — current PSA tier fee — check [psacard.com](https://www.psacard.com) for current pricing
+- **Target PSA 10 ($)** — current market value of a PSA 10 — check eBay sold listings
+- **PSA 9 Value ($)** — current market value of a PSA 9 — check eBay sold listings
+
+**What calculates automatically:**
+- **Break-Even ($)** — Raw Cost + Grading Fee — your minimum to recover costs
+- **2x Rule** — ✅ PASS if Target PSA 10 > 2× Break-Even, ❌ FAIL if not
+- **9 Penalty** — ⚠️ LOSS RISK if PSA 9 value is below your Break-Even
+- **ROI if PSA 10** — percentage return if you hit a 10
+- **Net $ if PSA 10** — actual dollar profit after eBay fees if you hit a 10
+
+<Callout type="warning">
+**⚠️ Important**
+
+A ❌ FAIL on the 2x Rule is a hard stop. Do not grade that card — you are paying PSA to gamble with your money. A ⚠️ LOSS RISK on the 9 Penalty means even a decent grade could lose you money. Both flags should override your gut feeling.
+</Callout>
+
+---
+
+### 🏛️ Empire Builder
+
+A full dealer-grade inventory management system. Every card gets a SKU, a velocity timer, and a margin calculation. Built for collectors running 20+ cards in inventory at a time.
+
+**What to enter (blue cells only):**
+- **Custom SKU** — your reference code, format: CMV-001, CMV-002, etc.
+- **Player / Year / Brand** — full card description
+- **Sourcing Channel** — where you bought it: eBay, LCS, COMC, show, etc.
+- **Date Purchased** — enter as MM/DD/YY — the velocity timer starts from this date
+- **Platform ID** — your listing ID on eBay, WhatNot, etc. for easy lookup
+- **Status** — type `Active` or `Sold`
+- **List Price ($)** — your asking price
+- **Cost ($)** — your all-in purchase cost
+
+**What calculates automatically:**
+- **Velocity (Days)** — days since purchase — turns yellow at 50, red at 75
+- **Gross Margin ($)** — List Price minus Cost
+- **Margin %** — Gross Margin as a percentage of List Price — green if above 30%
+
+<Callout type="tip">
+**💡 Pro Tip**
+
+Use the SKU system religiously. When you're managing 50+ cards, being able to search CMV-043 and instantly locate a card in your storage is worth more than any margin formula. Front-load the SKU on your storage boxes and shipping labels.
+</Callout>
+
+---
+
+### 🧭 Risk Dashboard
+
+Your portfolio health monitor. Update the five blue input cells and the dashboard tells you instantly whether your collection is dangerously over-concentrated in any one card, player, sport, or era.
+
+**What to enter (blue cells — Portfolio Inputs section):**
+- **Total Portfolio Value ($)** — add up the current market value of every card you own
+- **Most Valuable Single Card ($)** — the current market value of your single most expensive card
+- **Most-Held Player — Total Value ($)** — add up all cards of your most-concentrated player
+- **Largest Sport Category Value ($)** — add up all cards in your biggest sport
+- **Largest Era Category Value ($)** — add up all cards in your biggest era: vintage, junk wax, modern, ultra-modern
+
+**What the dashboard shows:**
+- **Your %** — each category as a percentage of your total portfolio
+- **Status** — ✅ HEALTHY, ⚠️ WATCH, or 🚩 OVER-CONCENTRATED with colour coding
+- **Recommendation** — plain-English explanation of the risk and what to do about it
+
+<Callout type="tip">
+**💡 Pro Tip**
+
+Update this dashboard at the start of every month. Most collectors only discover they're over-concentrated after a bad grade or market dip has already hit. Five minutes of honest data entry here is your insurance policy.
+</Callout>
+
+---
+
+### 📈 Charts
+
+Two auto-updating charts that visualise your key data at a glance. No input needed — they pull directly from Master Data and the Risk Dashboard.
+
+- **Chart 1: Gem Rate by Card** — shows how rare a PSA 10 is for each benchmark card. The Wembanyama bar dwarfs everything else — a reminder that ultra-modern is a fundamentally different product.
+- **Chart 2: Portfolio Concentration vs. Safe Limits** — plots your actual concentration percentages against the 20/30/50/60 thresholds. Any bar exceeding the grey limit bar needs attention.
+
+<Callout type="tip">
+**💡 Pro Tip**
+
+If you add new benchmark cards to Master Data, extend the chart data range manually (right-click the chart > Select Data) to include the new rows.
+</Callout>
+
+---
+
+### 🎯 Prospector Scorecard
+
+A structured scoring system for evaluating rookie cards before you buy. Score each prospect across six categories. The sheet calculates a total out of 100 and issues a verdict automatically.
+
+**Scoring categories and maximums:**
+
+| Category | Max | How to Score |
+|----------|-----|-------------|
+| Age at Debut | 20 | 20 = age 18–19 \| 15 = 20–21 \| 10 = 22–23 \| 5 = 24+ |
+| Draft Pedigree | 20 | 20 = Top-5 pick \| 15 = Top-10 \| 10 = Top-30 \| 5 = other |
+| Charisma / Swagger | 15 | 15 = elite marketability \| 10 = strong \| 5 = average \| 0 = unknown |
+| Winning Pedigree | 15 | 15 = champion/titles \| 10 = deep playoff runs \| 5 = winning team |
+| Statistical Upside | 20 | 20 = generational ceiling \| 15 = star \| 10 = starter \| 5 = fringe |
+| Card Scarcity | 10 | 10 = short print / low pop \| 5 = moderate \| 0 = flooded |
+
+**Verdict thresholds:**
+- 🔥 **STRONG BUY (80–100)** — elite prospect, buy now
+- ✅ **BUY (65–79)** — solid upside, worth the position
+- 👀 **WATCHLIST (50–64)** — monitor — wait for a dip or more data
+- ❌ **PASS (below 50)** — risk outweighs reward at current prices
+
+<Callout type="warning">
+**⚠️ Validation Note**
+
+Score cells turn **red** if you enter a number above the maximum for that category, and **yellow** if you hit the exact maximum. The total will still calculate but a red cell means your score is invalid — re-check the criteria.
+</Callout>
+
+---
+
+## Frequently Asked Questions
+
+**Can I add more rows?**
+
+Yes. All formula columns (Net Profit, Status, Velocity, etc.) are pre-loaded for 200 rows in every tab. Just start typing in the next empty row.
+
+**Can I change the eBay fee percentage?**
+
+Yes. On the Self-Sustaining tab, the fee is hardcoded as `0.1325` (13.25%) in column F. If you sell on a different platform or have a different fee tier, find-and-replace `0.1325` with your actual rate.
+
+**Can I add more benchmark cards to Master Data?**
+
+Yes. Add new rows below the existing data in the same format. The Difficulty badge in column F needs to be typed manually (`🔴 EXTREME`, `🟠 HARD`, `🟡 MODERATE`, or `🟢 EASY`). Extend the Charts tab's data range manually if you want the new cards to appear in Chart 1.
+
+**The Prospector Scorecard only goes to 100 — what if a card scores higher?**
+
+It cannot. The maximum for each category is capped, and validation turns cells red if you exceed any limit. A score of 94–100 is genuinely rare and represents a generational talent.
+
+**What if a card I'm tracking doesn't sell on eBay?**
+
+The eBay fee formula is a shortcut — adjust the fee rate in column F of the Self-Sustaining tab to match your actual platform. WhatNot, COMC, and direct sales all have different fee structures.
+
+---
+
+## Support & Updates
+
+This spreadsheet is a living product. Market data changes, PSA fees change, and eBay's fee structure changes. The formulas are built to be easily updated — the inputs are always in blue cells.
+
+- **Website** — [cardboardmultiverse.com](https://cardboardmultiverse.com)
+- **Updates** — follow Cardboard Multiverse for version announcements
+
+---
+
+*Built for collectors who run their hobby like a business.*
+
+**CARDBOARD MULTIVERSE · v3.0**

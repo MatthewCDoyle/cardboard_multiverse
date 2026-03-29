@@ -177,8 +177,8 @@ const config = {
             title: 'More',
             items: [
               {
-                label: 'Blog',
-                to: '/blog',
+                label: 'Articles',
+                to: '/articles',
               },
               {
                 label: 'GitHub',

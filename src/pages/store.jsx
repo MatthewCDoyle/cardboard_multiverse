@@ -2,6 +2,8 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import EbayStoreCarousel from '@site/src/components/EbayStoreCarousel';
 
+const EBAY_STORE_URL = 'https://www.ebay.com/str/cardboardmult1verse';
+
 export default function StorePage() {
   return (
     <Layout
@@ -23,7 +25,7 @@ export default function StorePage() {
           Browse our latest sports card auctions and find your next addition
         </p>
         <a
-          href="https://www.ebay.com/usr/cardboardmult1verse"
+          href={EBAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="button button--lg"
@@ -51,7 +53,8 @@ export default function StorePage() {
       {/* Carousel Section */}
       <div style={{ padding: '2rem 0' }}>
         <EbayStoreCarousel 
-          ebayUsername="cardboardmult1verse"
+          ebayUsername="cardboard_multiverse"
+          storeUrl={EBAY_STORE_URL}
           itemsPerPage={3}
           autoRotate={true}
           rotateInterval={5000}

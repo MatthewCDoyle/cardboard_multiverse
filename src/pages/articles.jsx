@@ -3,103 +3,71 @@ import Layout from '@theme/Layout';
 import { Calendar, Clock, Tag, TrendingUp, Search, Mail } from 'lucide-react';
 import styles from './articlesStyles.module.css';
 
-// Article Categories
-const CATEGORIES = [
-  { id: 'all', name: 'All Articles', color: '#6f2dbd' },
-  { id: 'market-trends', name: 'Market Trends', color: '#5a189a' },
-  { id: 'player-analysis', name: 'Player Analysis', color: '#b185db' },
-  { id: 'investment-tips', name: 'Investment Tips', color: '#7b2cbf' },
-  { id: 'industry-news', name: 'Industry News', color: '#4a4e69' },
-  { id: 'collecting-tips', name: 'Collecting Tips', color: '#9d4edd' },
-];
+const CATEGORY_COLORS = ['#6f2dbd', '#5a189a', '#b185db', '#7b2cbf', '#4a4e69', '#9d4edd'];
 
-// Sample Articles Data
-// Placeholder articles now follow the MDX frontmatter schema
-const ARTICLES = [
-  {
-    id: 101,
-    title: 'Fresh eBay Inventory',
-    subtitle: 'Fresh eBay Inventory',
-    excerpt: 'Browse active listings from Cardboard Multiverse with pricing, bids, and direct links to each eBay item.',
-    featured: true,
-    imageUrl: 'https://via.placeholder.com/800x400/1e293b/60a5fa?text=Fresh+eBay+Inventory',
-    views: 0,
-    author: 'Cardboard Multiverse',
-    publishDate: '2024-02-24',
-    readTime: '1 min read',
-    category: 'market-trends',
-    tags: ['eBay', 'Inventory', 'Listings']
-  },
-  {
-    id: 102,
-    title: 'Collector Resources',
-    subtitle: 'Collector Resources',
-    excerpt: 'Use practical guides, templates, and articles focused on grading, valuation, and building stronger collections.',
-    featured: true,
-    imageUrl: 'https://via.placeholder.com/800x400/1e293b/8b5cf6?text=Collector+Resources',
-    views: 0,
-    author: 'Cardboard Multiverse',
-    publishDate: '2024-02-24',
-    readTime: '1 min read',
-    category: 'collecting-tips',
-    tags: ['Resources', 'Guides', 'Templates']
-  },
-  {
-    id: 103,
-    title: 'Market-Focused Tracking',
-    subtitle: 'Market-Focused Tracking',
-    excerpt: 'Follow trends and top sellers across major sports with tools built for card collectors and flippers.',
-    featured: true,
-    imageUrl: 'https://via.placeholder.com/800x400/1e293b/f59e0b?text=Market+Tracking',
-    views: 0,
-    author: 'Cardboard Multiverse',
-    publishDate: '2024-02-24',
-    readTime: '1 min read',
-    category: 'market-trends',
-    tags: ['Market', 'Tracking', 'Tools']
-  },
-  {
-    title: 'How to Build a Championship Card Collection on a Budget',
-    slug: 'how-to-build-a-championship-card-collection-on-a-budget',
-    description: 'Smart strategies for collecting high-quality cards without breaking the bank.',
-    contentType: 'collecting-tips',
-    part: 'Collecting Tips',
-    chapter: 'Championship Collection',
-    chapterNumber: 7,
-    sport: ['All'],
-    topics: ['budget', 'strategy', 'beginners'],
-    audience: 'all',
-    status: 'published',
-    author: 'Mike Thompson',
-    publishDate: '2024-02-04',
-    readTime: '10 min read',
-    category: 'collecting-tips',
-    tags: ['Budget', 'Strategy', 'Beginners'],
-    views: 1543,
-    imageUrl: 'https://via.placeholder.com/800x400/1e293b/3b82f6?text=Budget+Collecting'
-  },
-  {
-    id: 8,
-    title: 'January 2024 Newsletter: Top Sales & Market Insights',
-    slug: 'january-2024-newsletter-top-sales-market-insights',
-    description: 'Review of January\'s biggest auctions, price movements, and what to expect in February.',
-    contentType: 'newsletter',
-    part: 'Market Trends',
-    chapter: 'January Recap',
-    chapterNumber: 8,
-    sport: ['All'],
-    topics: ['newsletter', 'recap', 'sales'],
-    audience: 'all',
-    status: 'published',
-    author: 'Sarah Chen',
-    publishDate: '2024-01-31',
-    readTime: '8 min read',
-    category: 'market-trends',
-    tags: ['Newsletter', 'Monthly Recap', 'Sales'],
-    views: 1987,
-    imageUrl: 'https://via.placeholder.com/800x400/1e293b/10b981?text=January+Recap'
-  },
-];
+const toCategoryName = (categoryId) => {
+  if (!categoryId) {
+    return 'Uncategorized';
+  }
+
+  return categoryId
+    .split('-')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+};
+
+const docsArticlesContext = require.context(
+  '@generated/docusaurus-plugin-content-docs/default',
+  false,
+  /^\.\/site-docs-articles-.*\.json$/,
+);
+
+const ARTICLES = docsArticlesContext
+  .keys()
+  .map((key) => {
+    const metadata = docsArticlesContext(key);
+    const frontMatter = metadata.frontMatter || {};
+    const normalizedCategory = (frontMatter.category || frontMatter.contentType || 'uncategorized').toLowerCase();
+    const metadataTags = Array.isArray(metadata.tags) ? metadata.tags.map((tag) => tag.label) : [];
+    const tags = Array.isArray(frontMatter.tags) ? frontMatter.tags : metadataTags;
+    const publishDate = frontMatter.publishDate || frontMatter.lastUpdated || null;
+    const readTime = frontMatter.readTime || frontMatter.estimatedReadTime || '5 min read';
+
+    return {
+      id: metadata.id,
+      title: metadata.title,
+      excerpt: metadata.description || frontMatter.description || '',
+      featured: Boolean(frontMatter.featured),
+      imageUrl: frontMatter.imageUrl || 'https://via.placeholder.com/800x400/1e293b/60a5fa?text=Cardboard+Multiverse',
+      views: Number(frontMatter.views) || 0,
+      author: frontMatter.author || 'Cardboard Multiverse',
+      publishDate,
+      readTime,
+      category: normalizedCategory,
+      tags,
+      permalink: metadata.permalink,
+    };
+  })
+  .sort((a, b) => {
+    const aDate = a.publishDate ? Date.parse(a.publishDate) : 0;
+    const bDate = b.publishDate ? Date.parse(b.publishDate) : 0;
+
+    if (aDate !== bDate) {
+      return bDate - aDate;
+    }
+
+    return b.views - a.views;
+  });
+
+const categoriesFromArticles = Array.from(new Set(ARTICLES.map((article) => article.category))).map(
+  (categoryId, index) => ({
+    id: categoryId,
+    name: toCategoryName(categoryId),
+    color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+  }),
+);
+
+const CATEGORIES = [{ id: 'all', name: 'All Articles', color: '#6f2dbd' }, ...categoriesFromArticles];
 
 export default function ArticlesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -115,11 +83,24 @@ export default function ArticlesPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const featuredArticles = ARTICLES.filter(a => a.featured).slice(0, 4);
-  const latestArticles = filteredArticles.slice(0, 6);
+  const explicitFeatured = ARTICLES.filter((article) => article.featured);
+  const featuredArticles = (explicitFeatured.length > 0 ? explicitFeatured : ARTICLES).slice(0, 4);
 
   const getCategoryColor = (categoryId) => {
     return CATEGORIES.find(cat => cat.id === categoryId)?.color || '#6f2dbd';
+  };
+
+  const formatArticleDate = (dateValue, options) => {
+    if (!dateValue) {
+      return 'Date TBD';
+    }
+
+    const parsedDate = new Date(dateValue);
+    if (Number.isNaN(parsedDate.getTime())) {
+      return 'Date TBD';
+    }
+
+    return parsedDate.toLocaleDateString('en-US', options);
   };
 
   return (
@@ -188,10 +169,10 @@ export default function ArticlesPage() {
                     <div className={styles.articleMeta}>
                       <div className={styles.metaItem}>
                         <Calendar size={14} />
-                        {new Date(article.publishDate).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          day: 'numeric', 
-                          year: 'numeric' 
+                        {formatArticleDate(article.publishDate, {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
                         })}
                       </div>
                       <div className={styles.metaItem}>
@@ -202,7 +183,7 @@ export default function ArticlesPage() {
                         {article.views.toLocaleString()} views
                       </div>
                     </div>
-                    <a href={`/articles/${article.id}`} className={styles.readMoreButton}>
+                    <a href={article.permalink} className={styles.readMoreButton}>
                       Read Full Article
                     </a>
                   </div>
@@ -265,7 +246,7 @@ export default function ArticlesPage() {
                   </div>
                   <div className={styles.articleContent}>
                     <h3 className={styles.articleTitle}>
-                      <a href={`/articles/${article.id}`}>{article.title}</a>
+                      <a href={article.permalink}>{article.title}</a>
                     </h3>
                     <p className={styles.articleExcerpt}>{article.excerpt}</p>
                     <div className={styles.articleTags}>
@@ -286,9 +267,9 @@ export default function ArticlesPage() {
                           <div className={styles.articleMeta}>
                             <span className={styles.metaItem}>
                               <Calendar size={12} />
-                              {new Date(article.publishDate).toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                day: 'numeric' 
+                              {formatArticleDate(article.publishDate, {
+                                month: 'short',
+                                day: 'numeric',
                               })}
                             </span>
                             <span className={styles.metaItem}>
@@ -298,10 +279,10 @@ export default function ArticlesPage() {
                           </div>
                         </div>
                       </div>
-                      <a href={`/articles/${article.id}`} className={styles.readButton}>
+                      <a href={article.permalink} className={styles.readButton}>
                         Read →
                       </a>
-                      <a href={`/articles/${article.id}`} className={styles.cardActionButton}>
+                      <a href={article.permalink} className={styles.cardActionButton}>
                         Go to Page
                       </a>
                     </div>

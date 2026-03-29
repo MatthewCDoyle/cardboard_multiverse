@@ -8,6 +8,7 @@ import styles from './styles.module.css';
  * 
  * Props:
  * - ebayUsername: Your eBay store username (required)
+ * - storeUrl: Public URL for your eBay store (optional)
  * - itemsPerPage: Number of items to show at once (default: 3)
  * - autoRotate: Auto-rotate carousel (default: true)
  * - rotateInterval: Auto-rotate interval in ms (default: 5000)
@@ -15,6 +16,7 @@ import styles from './styles.module.css';
 
 export default function EbayStoreCarousel({ 
   ebayUsername,
+  storeUrl,
   itemsPerPage = 3,
   autoRotate = true,
   rotateInterval = 5000,
@@ -25,9 +27,97 @@ export default function EbayStoreCarousel({
   const [error, setError] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const resolvedStoreUrl = storeUrl || `https://www.ebay.com/usr/${ebayUsername}`;
+  const unavailableMessage = 'Live eBay listings are temporarily unavailable. Browse the full store directly on eBay.';
 
-  // Get API URL from window global or fallback
-  const API_URL = (typeof window !== 'undefined' && window.__EBAY_PROXY_URL__) || 'http://localhost:3001';
+  const dedupe = (values) => [...new Set(values.filter((value) => typeof value === 'string'))];
+
+  const normalizeBaseUrl = (value) => (typeof value === 'string' && value.trim()
+    ? value.trim().replace(/\/$/, '')
+    : '');
+
+  const getCodespaceRoot = (host) => (typeof host === 'string'
+    ? host.replace(/-\d+\.app\.github\.dev$/, '')
+    : '');
+
+  const deriveCurrentProxyBaseUrl = () => {
+    if (typeof window === 'undefined') {
+      if (typeof process !== 'undefined' && process.env?.EBAY_PROXY_URL) {
+        return normalizeBaseUrl(process.env.EBAY_PROXY_URL);
+      }
+
+      return 'http://localhost:8787';
+    }
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      return 'http://localhost:8787';
+    }
+
+    if (window.location.hostname.endsWith('.app.github.dev')) {
+      const forwardedHost = window.location.hostname.replace(/-\d+\.app\.github\.dev$/, '-8787.app.github.dev');
+      return `${window.location.protocol}//${forwardedHost}`;
+    }
+
+    return '';
+  };
+
+  const canReuseSavedProxyBaseUrl = (value) => {
+    const normalizedValue = normalizeBaseUrl(value);
+
+    if (!normalizedValue || typeof window === 'undefined') {
+      return false;
+    }
+
+    try {
+      const parsed = new URL(normalizedValue);
+      const savedHost = parsed.hostname;
+      const currentHost = window.location.hostname;
+
+      if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+        return savedHost === 'localhost' || savedHost === '127.0.0.1';
+      }
+
+      if (currentHost.endsWith('.app.github.dev')) {
+        return savedHost.endsWith('.app.github.dev') && getCodespaceRoot(savedHost) === getCodespaceRoot(currentHost);
+      }
+    } catch {
+      return false;
+    }
+
+    return false;
+  };
+
+  const resolveProxyBaseUrls = () => {
+    const values = [];
+
+    const derivedBaseUrl = deriveCurrentProxyBaseUrl();
+
+    if (typeof window === 'undefined') {
+      if (derivedBaseUrl) {
+        values.push(derivedBaseUrl);
+      }
+
+      return dedupe(values);
+    }
+
+    if (derivedBaseUrl) {
+      values.push(derivedBaseUrl);
+    }
+
+    if (canReuseSavedProxyBaseUrl(window.__EBAY_PROXY_URL__)) {
+      values.push(normalizeBaseUrl(window.__EBAY_PROXY_URL__));
+    }
+
+    values.push('');
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      values.push('http://localhost:8787');
+      return dedupe(values);
+    }
+
+    values.push('http://localhost:8787');
+    return dedupe(values);
+  };
 
   // Fetch active listings from your eBay store
   useEffect(() => {
@@ -40,38 +130,70 @@ export default function EbayStoreCarousel({
 
       try {
         setLoading(true);
-        
-        // Try to fetch from your backend API
-        const response = await fetch(`${API_URL}/api/ebay-listings`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: ebayUsername,
-            categoryId: categoryId
-          })
-        });
+        const bases = resolveProxyBaseUrls();
+        const attemptErrors = [];
+        let loadedListings = null;
 
-        if (response.ok) {
-          const data = await response.json();
-          setListings(data.listings || []);
-          setError(null);
+        for (const base of bases) {
+          if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://')) {
+            attemptErrors.push(`${base || 'same-origin'} blocked on HTTPS page`);
+            continue;
+          }
+
+          const params = new URLSearchParams({ username: ebayUsername });
+          if (categoryId) {
+            params.set('categoryId', String(categoryId));
+          }
+
+          const url = `${base}/api/ebay-listings?${params.toString()}`;
+
+          try {
+            const response = await fetch(url, { credentials: 'include' });
+            const contentType = response.headers.get('content-type') || '';
+            const isJson = contentType.includes('application/json');
+            const body = isJson ? await response.json() : null;
+
+            if (!isJson) {
+              attemptErrors.push(`${url} returned non-JSON response`);
+              continue;
+            }
+
+            if (!response.ok) {
+              if (response.status === 401) {
+                attemptErrors.push(`${url} responded with 401 (forwarded port requires auth/public visibility)`);
+                continue;
+              }
+
+              attemptErrors.push(body?.error || `${url} responded with ${response.status}`);
+              continue;
+            }
+
+            loadedListings = body?.listings || [];
+            break;
+          } catch (requestError) {
+            attemptErrors.push(`${url} failed: ${requestError instanceof Error ? requestError.message : 'network error'}`);
+          }
+        }
+
+        if (loadedListings === null) {
+          console.warn('Unable to load eBay listings:', attemptErrors);
+          setError(unavailableMessage);
+          setListings([]);
         } else {
-          // Fallback to demo data
-          setListings(generateDemoListings(ebayUsername));
+          setListings(loadedListings);
+          setError(null);
         }
       } catch (err) {
-        console.log('Using demo data:', err.message);
-        // Use demo data for demonstration
-        setListings(generateDemoListings(ebayUsername));
+        console.error('Failed to fetch eBay listings:', err instanceof Error ? err.message : err);
+        setError(unavailableMessage);
+        setListings([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchListings();
-  }, [ebayUsername, categoryId, API_URL]);
+  }, [ebayUsername, categoryId]);
 
   // Auto-rotate carousel
   useEffect(() => {
@@ -85,68 +207,6 @@ export default function EbayStoreCarousel({
 
     return () => clearInterval(interval);
   }, [autoRotate, isPaused, listings.length, itemsPerPage, rotateInterval]);
-
-  // Generate demo listings for preview
-  const generateDemoListings = (username) => {
-    const demoItems = [
-      {
-        title: '2024 Topps Chrome Shohei Ohtani Base #1 PSA 10',
-        price: 45.99,
-        bids: 12,
-        timeLeft: '2d 14h',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/60a5fa?text=Baseball+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 34
-      },
-      {
-        title: '2023 Panini Prizm Victor Wembanyama Rookie RC Silver',
-        price: 125.00,
-        bids: 8,
-        timeLeft: '1d 8h',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/10b981?text=Basketball+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 56
-      },
-      {
-        title: 'Patrick Mahomes II 2017 Prizm Rookie Card #247',
-        price: 299.99,
-        bids: 23,
-        timeLeft: '3d 2h',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/f59e0b?text=Football+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 89
-      },
-      {
-        title: 'Mike Trout 2011 Topps Update Rookie Card #US175',
-        price: 875.00,
-        bids: 31,
-        timeLeft: '4h 23m',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/ef4444?text=Baseball+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 127
-      },
-      {
-        title: 'LeBron James 2003-04 Upper Deck Rookie Exclusives',
-        price: 1250.00,
-        bids: 45,
-        timeLeft: '6h 15m',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/8b5cf6?text=Basketball+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 203
-      },
-      {
-        title: 'Tom Brady 2000 Playoff Contenders Championship Ticket Auto',
-        price: 3500.00,
-        bids: 67,
-        timeLeft: '12h 45m',
-        imageUrl: 'https://via.placeholder.com/300x400/1e293b/06b6d4?text=Football+Card',
-        itemUrl: `https://www.ebay.com/usr/${username}`,
-        watching: 412
-      }
-    ];
-
-    return demoItems;
-  };
 
   const totalPages = Math.ceil(listings.length / itemsPerPage);
   const currentPage = Math.floor(currentIndex / itemsPerPage);
@@ -168,8 +228,26 @@ export default function EbayStoreCarousel({
   };
 
   const formatTimeLeft = (timeStr) => {
-    // Parse time left string and return formatted version
-    return timeStr;
+    if (!timeStr) return '';
+    const end = new Date(timeStr);
+    const now = new Date();
+    const diffMs = end - now;
+    if (diffMs <= 0) return 'Ended';
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 60) return `${diffMins}m`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ${diffMins % 60}m`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ${diffHours % 24}h`;
+  };
+
+  const getHigherResEbayImageUrl = (imageUrl) => {
+    if (!imageUrl || typeof imageUrl !== 'string') {
+      return imageUrl;
+    }
+
+    // eBay CDN images commonly include size tokens like s-l225; request a larger variant.
+    return imageUrl.replace(/\/s-l\d+\.(jpg|jpeg|png|webp)(\?.*)?$/i, '/s-l1600.$1$2');
   };
 
   if (loading) {
@@ -187,8 +265,16 @@ export default function EbayStoreCarousel({
     return (
       <div className={styles.carouselContainer}>
         <div className={styles.errorState}>
-          <p>Unable to load eBay listings</p>
+          <p>Live feed temporarily unavailable</p>
           <p className={styles.errorMessage}>{error}</p>
+          <a
+            href={resolvedStoreUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.storeLink}
+          >
+            Visit eBay Store <ExternalLink size={16} />
+          </a>
         </div>
       </div>
     );
@@ -200,7 +286,7 @@ export default function EbayStoreCarousel({
         <div className={styles.emptyState}>
           <p>No active listings found</p>
           <a 
-            href={`https://www.ebay.com/usr/${ebayUsername}`}
+            href={resolvedStoreUrl}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.storeLink}
@@ -227,7 +313,7 @@ export default function EbayStoreCarousel({
           <p className={styles.carouselSubtitle}>
             {listings.length} active listing{listings.length !== 1 ? 's' : ''} from{' '}
             <a 
-              href={`https://www.ebay.com/usr/${ebayUsername}`}
+              href={resolvedStoreUrl}
               target="_blank"
               rel="noopener noreferrer"
               className={styles.usernameLink}
@@ -237,7 +323,7 @@ export default function EbayStoreCarousel({
           </p>
         </div>
         <a 
-          href={`https://www.ebay.com/usr/${ebayUsername}`}
+          href={resolvedStoreUrl}
           target="_blank"
           rel="noopener noreferrer"
           className={styles.viewAllBtn}
@@ -278,9 +364,10 @@ export default function EbayStoreCarousel({
                 >
                   <div className={styles.cardImage}>
                     <img 
-                      src={listing.imageUrl} 
+                      src={getHigherResEbayImageUrl(listing.imageUrl)} 
                       alt={listing.title}
                       loading="lazy"
+                      decoding="async"
                     />
                     <div className={styles.imageOverlay}>
                       <span className={styles.viewDetailsBtn}>

@@ -17,8 +17,8 @@ const FeatureList = [
       </>
     ),
     cta: {
-      label: 'Visit Our Store!',
-      to: '/store',
+      label: 'Visit Our eBay Store!',
+      to: 'https://www.ebay.com/str/cardboardmult1verse',
     },
   },
   {
@@ -33,7 +33,7 @@ const FeatureList = [
     ),
     cta: {
       label: 'Check out our Resources!',
-      to: '/docs/cm-article-appendix-resources-and-affiliates',
+      to: '/articles',
     },
   },
   {
@@ -68,6 +68,8 @@ function Feature({image, alt, title, description, cta}) {
             className="button button--lg"
             style={{ background: 'rebeccapurple', color: 'white', border: 'none' }}
             to={cta.to}
+            target={cta.to.startsWith('http') ? '_blank' : undefined}
+            rel={cta.to.startsWith('http') ? 'noopener noreferrer' : undefined}
           >
             {cta.label}
           </Link>

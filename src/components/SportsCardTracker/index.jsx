@@ -1,25 +1,124 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, DollarSign, Calendar, Users, RefreshCw, Filter, Download } from 'lucide-react';
+import { TrendingUp, DollarSign, Calendar, Users, RefreshCw, Filter, Download, ExternalLink } from 'lucide-react';
 
 const HISTORY_STORAGE_KEY = 'sports-card-tracker-history-v1';
 const PROXY_URL_STORAGE_KEY = 'sports-card-tracker-proxy-url';
+const PROXY_HEALTH_CACHE_TTL_MS = 30 * 1000;
 
-const dedupe = (values) => [...new Set(values.filter((value) => typeof value === 'string' && value.length > 0))];
+let proxyHealthCache = {
+  expiresAt: 0,
+  bases: []
+};
+
+const dedupe = (values) => [...new Set(values.filter((value) => typeof value === 'string'))];
+
+const normalizeBaseUrl = (value) => {
+  if (typeof value !== 'string' || !value.trim()) {
+    return '';
+  }
+
+  const trimmed = value.trim().replace(/\/$/, '');
+
+  if (!/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+    const path = parsed.pathname.replace(/\/$/, '').toLowerCase();
+
+    if (path === '/api') {
+      return `${parsed.origin}/api`;
+    }
+
+    return parsed.origin;
+  } catch {
+    return trimmed;
+  }
+};
+
+const getCodespaceRoot = (host) => (typeof host === 'string'
+  ? host.replace(/-\d+\.app\.github\.dev$/, '')
+  : '');
+
+const deriveCurrentProxyBaseUrl = () => {
+  if (typeof window === 'undefined') {
+    if (typeof process !== 'undefined' && process.env?.EBAY_PROXY_URL) {
+      return normalizeBaseUrl(process.env.EBAY_PROXY_URL);
+    }
+
+    return '';
+  }
+
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:8787';
+  }
+
+  if (window.location.hostname.endsWith('.app.github.dev')) {
+    const forwardedHost = window.location.hostname.replace(/-\d+\.app\.github\.dev$/, '-8787.app.github.dev');
+    return `${window.location.protocol}//${forwardedHost}`;
+  }
+
+  return '';
+};
+
+const canReuseSavedProxyBaseUrl = (value) => {
+  const normalizedValue = normalizeBaseUrl(value);
+
+  if (!normalizedValue || typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(normalizedValue);
+    const savedHost = parsed.hostname;
+    const currentHost = window.location.hostname;
+
+    if (currentHost === 'localhost' || currentHost === '127.0.0.1') {
+      return savedHost === 'localhost' || savedHost === '127.0.0.1';
+    }
+
+    if (currentHost.endsWith('.app.github.dev')) {
+      return savedHost.endsWith('.app.github.dev') && getCodespaceRoot(savedHost) === getCodespaceRoot(currentHost);
+    }
+  } catch {
+    return false;
+  }
+
+  return false;
+};
 
 const resolveProxyBaseUrls = () => {
   const values = [];
+  const derivedBaseUrl = deriveCurrentProxyBaseUrl();
 
   if (typeof window === 'undefined') {
-    if (typeof process !== 'undefined' && process.env?.EBAY_PROXY_URL) {
-      values.push(process.env.EBAY_PROXY_URL.replace(/\/$/, ''));
+    if (derivedBaseUrl) {
+      values.push(derivedBaseUrl);
     }
 
     return dedupe(values);
   }
 
-  if (typeof window.__EBAY_PROXY_URL__ === 'string' && window.__EBAY_PROXY_URL__.trim()) {
-    const manualUrl = window.__EBAY_PROXY_URL__.trim().replace(/\/$/, '');
+  const isCodespacesHost = window.location.hostname.endsWith('.app.github.dev');
+
+  // In Codespaces with static serve, same-origin /api usually resolves to HTML.
+  // Prefer forwarded proxy first there, but keep same-origin as a fallback.
+  if (!isCodespacesHost) {
+    values.push('');
+  }
+
+  if (derivedBaseUrl) {
+    values.push(derivedBaseUrl);
+  }
+
+  if (isCodespacesHost) {
+    values.push('');
+  }
+
+  if (canReuseSavedProxyBaseUrl(window.__EBAY_PROXY_URL__)) {
+    const manualUrl = normalizeBaseUrl(window.__EBAY_PROXY_URL__);
     values.push(manualUrl);
     try {
       window.localStorage.setItem(PROXY_URL_STORAGE_KEY, manualUrl);
@@ -30,18 +129,16 @@ const resolveProxyBaseUrls = () => {
 
   try {
     const storedUrl = window.localStorage.getItem(PROXY_URL_STORAGE_KEY);
-    if (typeof storedUrl === 'string' && storedUrl.trim()) {
-      values.push(storedUrl.trim().replace(/\/$/, ''));
+    if (canReuseSavedProxyBaseUrl(storedUrl)) {
+      values.push(normalizeBaseUrl(storedUrl));
     }
   } catch {
     // Ignore localStorage read errors.
   }
 
   if (typeof process !== 'undefined' && process.env?.EBAY_PROXY_URL) {
-    values.push(process.env.EBAY_PROXY_URL.replace(/\/$/, ''));
+    values.push(normalizeBaseUrl(process.env.EBAY_PROXY_URL));
   }
-
-  values.push('');
 
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     values.push('http://localhost:8787');
@@ -52,14 +149,82 @@ const resolveProxyBaseUrls = () => {
     values.push(`${window.location.protocol}//${window.location.hostname}:8787`);
   }
 
-  const forwardedHost = window.location.hostname.replace(/-\d+\.app\.github\.dev$/, '-8787.app.github.dev');
-  if (forwardedHost !== window.location.hostname) {
-    values.push(`${window.location.protocol}//${forwardedHost}`);
+  if (derivedBaseUrl) {
+    values.push(derivedBaseUrl);
   }
 
   values.push('http://localhost:8787');
 
   return dedupe(values);
+};
+
+const buildProxyPathUrl = (baseUrl, path) => {
+  const normalizedPath = (() => {
+    if (baseUrl.endsWith('/api') && path.startsWith('/api/')) {
+      return path.replace(/^\/api/, '');
+    }
+
+    return path;
+  })();
+
+  return `${baseUrl}${normalizedPath}`;
+};
+
+const fetchJson = async (url, timeoutMs = 2500) => {
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      credentials: 'include',
+      signal: controller.signal
+    });
+    const contentType = response.headers.get('content-type') || '';
+    const responseText = await response.text();
+
+    if (!contentType.includes('application/json')) {
+      return { ok: false, status: response.status, body: null, nonJson: true, preview: responseText.slice(0, 120) };
+    }
+
+    const body = JSON.parse(responseText || '{}');
+    return { ok: response.ok, status: response.status, body, nonJson: false, preview: '' };
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
+};
+
+const getReachableProxyBaseUrls = async () => {
+  const now = Date.now();
+  if (proxyHealthCache.expiresAt > now && proxyHealthCache.bases.length > 0) {
+    return proxyHealthCache.bases;
+  }
+
+  const candidates = resolveProxyBaseUrls();
+  const reachable = [];
+
+  for (const base of candidates) {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://')) {
+      continue;
+    }
+
+    const healthUrl = buildProxyPathUrl(base, '/api/health');
+    try {
+      const result = await fetchJson(healthUrl);
+      if (result.ok && result.body?.ok) {
+        reachable.push(base);
+      }
+    } catch {
+      // Ignore probe failures and continue trying next base.
+    }
+  }
+
+  const finalBases = reachable.length > 0 ? reachable : candidates;
+  proxyHealthCache = {
+    bases: finalBases,
+    expiresAt: now + PROXY_HEALTH_CACHE_TTL_MS
+  };
+
+  return finalBases;
 };
 
 const buildProxyUrl = (baseUrl, path, params) => {
@@ -141,8 +306,82 @@ const buildHistoricalSeries = (snapshots, players, days) => {
   return points;
 };
 
+const buildGoogleTrendsTimeframe = (days) => {
+  if (days <= 1) {
+    return 'now 1-d';
+  }
+
+  if (days <= 7) {
+    return 'now 7-d';
+  }
+
+  if (days <= 14) {
+    return 'today 1-m';
+  }
+
+  if (days <= 30) {
+    return 'today 3-m';
+  }
+
+  return 'today 12-m';
+};
+
+const buildGoogleTrendsUrl = ({ terms, days, geo = 'US' }) => {
+  const query = terms.filter(Boolean).join(',');
+  const params = new URLSearchParams({
+    q: query,
+    date: buildGoogleTrendsTimeframe(days),
+    geo
+  });
+
+  return `https://trends.google.com/trends/explore?${params.toString()}`;
+};
+
+const fetchTopTrendingAthletes = async ({ limit = 5 }) => {
+  const bases = await getReachableProxyBaseUrls();
+  const attemptErrors = [];
+
+  for (const base of bases) {
+    if (typeof window !== 'undefined' && window.location.protocol === 'https:' && base.startsWith('http://')) {
+      attemptErrors.push(`${base || 'same-origin'} blocked on HTTPS page`);
+      continue;
+    }
+
+    const url = buildProxyUrl(base, '/api/trends/top-athletes', {
+      limit: String(limit)
+    });
+
+    try {
+      const result = await fetchJson(url, 4000);
+
+      if (result.nonJson) {
+        const bodyPreview = result.preview.replace(/\s+/g, ' ').trim().slice(0, 120);
+        attemptErrors.push(
+          `${url} returned non-JSON response (${result.status})`
+          + `${bodyPreview ? `: ${bodyPreview}` : ''}`,
+        );
+        continue;
+      }
+
+      if (!result.ok) {
+        attemptErrors.push(result.body?.error || `${url} responded with ${result.status}`);
+        continue;
+      }
+
+      return Array.isArray(result.body?.athletes) ? result.body.athletes : [];
+    } catch (error) {
+      attemptErrors.push(`${url} failed: ${error instanceof Error ? error.message : 'network error'}`);
+    }
+  }
+
+  const attemptsSummary = attemptErrors.slice(0, 4).join(' | ');
+  throw new Error(
+    `Failed to fetch top trending athletes. ${attemptsSummary || 'No reachable proxy endpoint.'}`
+  );
+};
+
 const fetchCompletedItems = async ({ player, sport, days }) => {
-  const bases = resolveProxyBaseUrls();
+  const bases = await getReachableProxyBaseUrls();
   const attemptErrors = [];
 
   for (const base of bases) {
@@ -158,38 +397,47 @@ const fetchCompletedItems = async ({ player, sport, days }) => {
     });
 
     try {
-      const response = await fetch(url, { credentials: 'include' });
-      const contentType = response.headers.get('content-type') || '';
-      const responseText = await response.text();
-      const isJson = contentType.includes('application/json');
-      const body = isJson
-        ? JSON.parse(responseText || '{}')
-        : null;
+      const result = await fetchJson(url, 5000);
 
-      if (!isJson) {
-        attemptErrors.push(`${url} returned non-JSON response`);
+      if (result.nonJson) {
+        const bodyPreview = result.preview
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 120);
+        attemptErrors.push(
+          `${url} returned non-JSON response (${result.status})`
+          + `${bodyPreview ? `: ${bodyPreview}` : ''}`,
+        );
         continue;
       }
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!result.ok) {
+        if (result.status === 401) {
           attemptErrors.push(`${url} responded with 401 (tunnel auth). Set forwarded port 8787 visibility to Public or use authenticated tunnel cookies.`);
           continue;
         }
 
-        attemptErrors.push(body?.error || `${url} responded with ${response.status}`);
+        attemptErrors.push(result.body?.error || `${url} responded with ${result.status}`);
         continue;
       }
 
-      return body;
+      return result.body;
     } catch (error) {
       attemptErrors.push(`${url} failed: ${error instanceof Error ? error.message : 'network error'}`);
     }
   }
 
+  const sameOriginHtmlFallback = attemptErrors.some(
+    (error) => error.includes('/api/ebay/completed-items') && error.includes('non-JSON response'),
+  );
+  const attemptsSummary = attemptErrors.slice(0, 4).join(' | ');
+
   throw new Error(
-    `Failed to fetch sold listings through proxy. ${attemptErrors[0] || 'No reachable proxy endpoint.'} `
-    + 'Set `window.__EBAY_PROXY_URL__` to your forwarded proxy URL (for Codespaces: `https://<name>-8787.app.github.dev`), set port 8787 visibility to Public if needed, and ensure `npm run api` is running.'
+    `Failed to fetch sold listings through proxy. ${attemptsSummary || 'No reachable proxy endpoint.'} `
+    + (sameOriginHtmlFallback
+      ? 'Same-origin `/api` returned HTML, which usually means the site is running with `npm run serve` (no dev proxy). Use `npm run start` together with `npm run api`, or set `window.__EBAY_PROXY_URL__` to your forwarded proxy URL. '
+      : '')
+    + 'For Codespaces, ensure `npm run api` is running, use `https://<name>-8787.app.github.dev`, and set port 8787 visibility to Public if needed.'
   );
 };
 
@@ -215,6 +463,114 @@ const PLAYERS = {
   }
 };
 
+const DEFAULT_GOOGLE_TRENDS_ATHLETES = [
+  'Michael Jordan',
+  'Tom Brady',
+  'Shohei Ohtani',
+  'LeBron James',
+  'Patrick Mahomes'
+];
+
+const TRENDS_REFRESH_MS = 60 * 1000;
+
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+const getSentimentTone = (score) => {
+  if (score >= 75) {
+    return {
+      label: 'Very Bullish',
+      color: '#047857',
+      background: '#ecfdf5'
+    };
+  }
+
+  if (score >= 60) {
+    return {
+      label: 'Bullish',
+      color: '#065f46',
+      background: '#f0fdf4'
+    };
+  }
+
+  if (score >= 45) {
+    return {
+      label: 'Neutral',
+      color: '#92400e',
+      background: '#fffbeb'
+    };
+  }
+
+  if (score >= 30) {
+    return {
+      label: 'Bearish',
+      color: '#991b1b',
+      background: '#fef2f2'
+    };
+  }
+
+  return {
+    label: 'Very Bearish',
+    color: '#7f1d1d',
+    background: '#fef2f2'
+  };
+};
+
+const computeMarketSentiment = ({ salesData, trendsBySport, sport }) => {
+  const trackedPlayers = Object.values(salesData);
+  const trackedCount = trackedPlayers.length;
+
+  if (trackedCount === 0) {
+    const neutralTone = getSentimentTone(50);
+    return {
+      score: 50,
+      tone: neutralTone,
+      summary: `No ${sport} sales snapshots yet. Run a refresh to generate sentiment from live sold listings.`,
+      drivers: [
+        'Sales momentum unavailable',
+        'Trend feed available once athlete data loads'
+      ]
+    };
+  }
+
+  const signedTrendPercents = trackedPlayers.map((player) => {
+    const direction = player.trend === 'up' ? 1 : -1;
+    return direction * Number(player.trendPercent || 0);
+  });
+
+  const averageSignedTrend = signedTrendPercents.reduce((sum, value) => sum + value, 0) / trackedCount;
+  const upCount = trackedPlayers.filter((player) => player.trend === 'up').length;
+  const upRatio = upCount / trackedCount;
+
+  const sportTrendScores = trendsBySport.map((athlete) => athlete.score);
+  const trendSignal = sportTrendScores.length > 0
+    ? sportTrendScores.reduce((sum, value) => sum + value, 0) / sportTrendScores.length
+    : 0;
+  const trendBoost = sportTrendScores.length > 0
+    ? clamp((trendSignal - 20) / 4, -10, 15)
+    : 0;
+
+  const momentumComponent = clamp(averageSignedTrend, -20, 20);
+  const breadthComponent = (upRatio - 0.5) * 30;
+  const score = Math.round(clamp(50 + momentumComponent + breadthComponent + trendBoost, 0, 100));
+  const tone = getSentimentTone(score);
+  const summary = `${upCount}/${trackedCount} tracked ${sport} players are trending up in sold volume. Avg momentum: ${averageSignedTrend.toFixed(1)}%.`;
+
+  const drivers = [
+    `Breadth: ${Math.round(upRatio * 100)}% of players showing upward sold-volume trend`,
+    `Momentum: ${averageSignedTrend >= 0 ? '+' : ''}${averageSignedTrend.toFixed(1)}% average change`,
+    sportTrendScores.length > 0
+      ? `Google Trends: ${trendsBySport[0].name} leads ${sport} attention`
+      : `Google Trends: no strong ${sport} athlete signal in current sample`
+  ];
+
+  return {
+    score,
+    tone,
+    summary,
+    drivers
+  };
+};
+
 const SportsCardTracker = () => {
   const [selectedSport, setSelectedSport] = useState('MLB');
   const [selectedCategory, setSelectedCategory] = useState('current');
@@ -224,6 +580,10 @@ const SportsCardTracker = () => {
   const [historicalData, setHistoricalData] = useState([]);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
+  const [trendingAthletes, setTrendingAthletes] = useState([]);
+  const [trendingLoading, setTrendingLoading] = useState(false);
+  const [trendingError, setTrendingError] = useState('');
+  const [trendsLastUpdate, setTrendsLastUpdate] = useState(null);
 
   const fetchEbayData = async (sport, category, days) => {
     setLoading(true);
@@ -292,6 +652,31 @@ const SportsCardTracker = () => {
     fetchEbayData(selectedSport, selectedCategory, dateRange);
   }, [selectedSport, selectedCategory, dateRange]);
 
+  const fetchTrends = useCallback(async () => {
+    setTrendingLoading(true);
+    setTrendingError('');
+
+    try {
+      const athletes = await fetchTopTrendingAthletes({ limit: 10 });
+      setTrendingAthletes(athletes);
+      setTrendsLastUpdate(new Date());
+    } catch (error) {
+      setTrendingAthletes([]);
+      setTrendingError(error instanceof Error ? error.message : 'Unable to fetch Google Trends data right now.');
+    } finally {
+      setTrendingLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTrends();
+    const timer = window.setInterval(fetchTrends, TRENDS_REFRESH_MS);
+
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [fetchTrends]);
+
   // Get sorted players by sales volume
   const sortedPlayers = Object.entries(salesData)
     .sort(([, a], [, b]) => b.salesVolume - a.salesVolume)
@@ -299,6 +684,19 @@ const SportsCardTracker = () => {
 
   const totalSales = sortedPlayers.reduce((sum, [, data]) => sum + data.totalValue, 0);
   const avgSales = sortedPlayers.length > 0 ? Math.floor(totalSales / sortedPlayers.length) : 0;
+  const selectedSportTrendingAthletes = trendingAthletes
+    .filter((athlete) => athlete.sport === selectedSport)
+    .slice(0, 5);
+  const marketSentiment = computeMarketSentiment({
+    salesData,
+    trendsBySport: selectedSportTrendingAthletes,
+    sport: selectedSport
+  });
+  const googleTrendsTerms = (trendingAthletes.length > 0
+    ? trendingAthletes.map((athlete) => athlete.name)
+    : DEFAULT_GOOGLE_TRENDS_ATHLETES
+  ).slice(0, 5);
+  const googleTrendsUrl = buildGoogleTrendsUrl({ terms: googleTrendsTerms, days: dateRange });
 
   const exportData = () => {
     const csv = [
@@ -451,25 +849,25 @@ const SportsCardTracker = () => {
         }
         
         .trackerRoot .rank-1 {
-          background: linear-gradient(135deg, #b185db 0%, #8f5ad6 100%);
-          color: #191919;
-          box-shadow: 0 4px 12px rgba(245, 175, 2, 0.35);
+          background: linear-gradient(135deg, #f6d365 0%, #d4a017 100%);
+          color: #4a2f08;
+          box-shadow: 0 4px 12px rgba(212, 160, 23, 0.35);
         }
         
         .trackerRoot .rank-2 {
-          background: linear-gradient(135deg, #d9d9d9 0%, #bfc3c7 100%);
-          color: #191919;
+          background: linear-gradient(135deg, #e5e7eb 0%, #b7bec8 100%);
+          color: #2f3540;
         }
         
         .trackerRoot .rank-3 {
-          background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
-          color: #7c2d12;
+          background: linear-gradient(135deg, #cd7f32 0%, #8c4f1d 100%);
+          color: #fff4e6;
         }
         
         .trackerRoot .rank-other {
-          background: #f7f8fa;
-          color: #5c5f62;
-          border: 1px solid #d9d9d9;
+          background: linear-gradient(135deg, #7b2cbf 0%, #5a189a 100%);
+          color: #ffffff;
+          border: 1px solid #6f2dbd;
         }
         
         .trackerRoot .trend-up {
@@ -622,7 +1020,10 @@ const SportsCardTracker = () => {
             <div style={{ display: 'flex', gap: '0.5rem' }}>
               <button 
                 className="btn btn-secondary"
-                onClick={() => fetchEbayData(selectedSport, selectedCategory, dateRange)}
+                onClick={() => {
+                  fetchEbayData(selectedSport, selectedCategory, dateRange);
+                  fetchTrends();
+                }}
                 disabled={loading}
               >
                 <RefreshCw size={18} className={loading ? 'pulse' : ''} />
@@ -711,6 +1112,144 @@ const SportsCardTracker = () => {
                 </p>
               </div>
             </div>
+          </div>
+
+          <div className="card stat-card animate-in" style={{ animationDelay: '0.5s', opacity: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                padding: '1rem',
+                borderRadius: '12px'
+              }}>
+                <TrendingUp size={24} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <p style={{ color: '#5c5f62', fontSize: '0.85rem', marginBottom: '0.25rem' }}>Real-Time Market Sentiment</p>
+                <p className="metric-value" style={{ fontSize: '1.4rem', color: marketSentiment.tone.color, marginBottom: '0.35rem' }}>
+                  {marketSentiment.score}/100 • {marketSentiment.tone.label}
+                </p>
+                <p style={{ color: '#5c5f62', fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+                  {marketSentiment.summary}
+                </p>
+                <div style={{
+                  width: '100%',
+                  background: '#eceff2',
+                  height: '8px',
+                  borderRadius: '999px',
+                  overflow: 'hidden',
+                  marginBottom: '0.5rem'
+                }}>
+                  <div style={{
+                    width: `${marketSentiment.score}%`,
+                    background: 'linear-gradient(90deg, #ef4444 0%, #f59e0b 45%, #10b981 100%)',
+                    height: '100%'
+                  }} />
+                </div>
+                {trendingError && (
+                  <p style={{ color: '#9f1239', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
+                    Live trend refresh unavailable. Sentiment is using fallback athlete list.
+                  </p>
+                )}
+                <p style={{ color: '#5c5f62', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
+                  Trend feed refreshes every 60s.
+                  {trendsLastUpdate ? ` Last trend sync: ${trendsLastUpdate.toLocaleTimeString()}` : ''}
+                </p>
+                <a
+                  href={googleTrendsUrl}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.35rem',
+                    color: '#5a189a',
+                    fontWeight: '600',
+                    textDecoration: 'none',
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  Open Live Trends
+                  <ExternalLink size={14} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trends + Sentiment Detail */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '1rem',
+          marginBottom: '2rem'
+        }}>
+          <div className="card animate-in" style={{ animationDelay: '0.55s', opacity: 0 }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              marginBottom: '1rem',
+              color: '#191919',
+              fontWeight: '600'
+            }}>
+              Trending Players ({selectedSport})
+            </h2>
+
+            {trendingLoading ? (
+              <div className="loading-skeleton" style={{ height: '220px' }} />
+            ) : selectedSportTrendingAthletes.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {selectedSportTrendingAthletes.map((athlete, index) => (
+                  <div key={athlete.name} style={{
+                    display: 'flex',
+                    gap: '0.8rem',
+                    padding: '0.75rem',
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '10px',
+                    background: '#fcfcfd'
+                  }}>
+                    <div className={`rank-badge rank-${index < 3 ? index + 1 : 'other'}`} style={{ width: '32px', height: '32px', fontSize: '0.9rem' }}>
+                      {index + 1}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ fontWeight: '600', color: '#191919' }}>{athlete.name}</p>
+                      <p style={{ fontSize: '0.8rem', color: '#5c5f62' }}>
+                        Trend score: {athlete.score}
+                        {athlete.sampleMentions?.[0] ? ` • ${athlete.sampleMentions[0]}` : ''}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p style={{ color: '#5c5f62', fontSize: '0.9rem' }}>
+                No live trending players detected for {selectedSport} yet. Try refresh.
+              </p>
+            )}
+          </div>
+
+          <div className="card animate-in" style={{ animationDelay: '0.58s', opacity: 0 }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              marginBottom: '1rem',
+              color: '#191919',
+              fontWeight: '600'
+            }}>
+              Sentiment Drivers
+            </h2>
+            <div style={{
+              background: marketSentiment.tone.background,
+              border: `1px solid ${marketSentiment.tone.color}22`,
+              borderRadius: '12px',
+              padding: '0.9rem',
+              marginBottom: '0.9rem'
+            }}>
+              <p style={{ color: marketSentiment.tone.color, fontWeight: '700', marginBottom: '0.25rem' }}>
+                {marketSentiment.tone.label}
+              </p>
+              <p style={{ color: '#3d3f42', fontSize: '0.9rem' }}>{marketSentiment.summary}</p>
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '1.15rem', color: '#3d3f42', lineHeight: '1.7' }}>
+              {marketSentiment.drivers.map((driver) => (
+                <li key={driver}>{driver}</li>
+              ))}
+            </ul>
           </div>
         </div>
 
