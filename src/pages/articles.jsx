@@ -151,10 +151,8 @@ export default function ArticlesPage() {
             <div className={styles.featuredGrid}>
               {featuredArticles.map(article => (
                 <article key={article.id} className={styles.featuredCard}>
-                  <div 
-                    className={styles.featuredImage}
-                    style={{ backgroundImage: `url(${article.imageUrl})` }}
-                  >
+                  <div className={styles.featuredImage}>
+                    <span className={styles.tbdPlaceholder}>TBD</span>
                     <div className={styles.featuredBadge}>⭐ Featured</div>
                   </div>
                   <div className={styles.featuredContent}>
@@ -233,10 +231,8 @@ export default function ArticlesPage() {
             <div className={styles.articlesGrid}>
               {filteredArticles.map(article => (
                 <article key={article.id} className={styles.articleCard}>
-                  <div 
-                    className={styles.articleImage}
-                    style={{ backgroundImage: `url(${article.imageUrl})` }}
-                  >
+                  <div className={styles.articleImage}>
+                    <span className={styles.tbdPlaceholder}>TBD</span>
                     <div 
                       className={styles.categoryBadge}
                       style={{ backgroundColor: getCategoryColor(article.category) }}
@@ -283,7 +279,7 @@ export default function ArticlesPage() {
                         Read →
                       </a>
                       <a href={article.permalink} className={styles.cardActionButton}>
-                        Go to Page
+                        Read More
                       </a>
                     </div>
                   </div>
