@@ -80,6 +80,11 @@ export default function EbayStoreCarousel({
       if (currentHost.endsWith('.app.github.dev')) {
         return savedHost.endsWith('.app.github.dev') && getCodespaceRoot(savedHost) === getCodespaceRoot(currentHost);
       }
+
+      // Production proxy runs on Cloudflare Workers (set by set-ebay-proxy.js)
+      if (savedHost.endsWith('.workers.dev')) {
+        return true;
+      }
     } catch {
       return false;
     }
