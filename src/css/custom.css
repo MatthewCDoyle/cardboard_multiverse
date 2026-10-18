@@ -98,6 +98,12 @@ body {
   text-align: center;
 }
 
+/* Center the footer link columns */
+.footer__links {
+  justify-content: center;
+  text-align: center;
+}
+
 .footer__logo {
   display: block;
   max-width: 140px;

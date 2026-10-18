@@ -173,19 +173,6 @@ const config = {
               },
             ],
           },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'Articles',
-                to: '/articles',
-              },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/MatthewCDoyle/cardboard_multiverse',
-              },
-            ],
-          },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} Cardboard Multiverse.`,
       },
