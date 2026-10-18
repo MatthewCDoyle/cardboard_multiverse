@@ -275,9 +275,6 @@ export default function ArticlesPage() {
                           </div>
                         </div>
                       </div>
-                      <a href={article.permalink} className={styles.readButton}>
-                        Read →
-                      </a>
                       <a href={article.permalink} className={styles.cardActionButton}>
                         Read More
                       </a>
