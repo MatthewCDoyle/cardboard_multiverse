@@ -109,6 +109,7 @@ body {
 
 .footer__links .footer__col {
   flex: 0 0 auto;
+  width: auto;
   max-width: none;
   text-align: center;
 }
