@@ -476,7 +476,7 @@ const DEFAULT_GOOGLE_TRENDS_ATHLETES = [
   'Patrick Mahomes'
 ];
 
-const TRENDS_REFRESH_MS = 60 * 1000;
+const TRENDS_REFRESH_MS = 15 * 60 * 1000;
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -1157,7 +1157,7 @@ const SportsCardTracker = () => {
                   </p>
                 )}
                 <p style={{ color: '#5c5f62', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
-                  Trend feed refreshes every 60s.
+                  Trend feed refreshes every 15 min.
                   {trendsLastUpdate ? ` Last trend sync: ${trendsLastUpdate.toLocaleTimeString()}` : ''}
                 </p>
                 <a
