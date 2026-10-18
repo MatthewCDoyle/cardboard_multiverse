@@ -1,0 +1,11 @@
+# Cloudflare Worker: production mirror of server/ebay-proxy.js
+# Docs: https://developers.cloudflare.com/workers/wrangler/configuration/
+
+name = "cardboard-multiverse-ebay-proxy"
+main = "src/index.js"
+compatibility_date = "2026-10-18"
+
+# Required secrets (set each with: npx wrangler secret put <NAME>):
+#   EBAY_APP_ID      - eBay developer App ID (Finding API + Browse OAuth client id)
+#   EBAY_CERT_ID     - eBay developer Cert ID (Browse OAuth client secret)
+#   EBAY_CAMPAIGN_ID - eBay Partner Network campaign id (affiliate links, optional)

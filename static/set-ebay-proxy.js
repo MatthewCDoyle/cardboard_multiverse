@@ -21,7 +21,8 @@
       return protocol + '//' + host.replace(/-\d+\.app\.github\.dev$/, '-8787.app.github.dev');
     }
 
-    return '';
+    // Production: use the deployed Cloudflare Worker mirror of server/ebay-proxy.js
+    return 'https://cardboard-multiverse-ebay-proxy.cardboardmultiverse.workers.dev';
   }
 
   function canReuseSavedUrl(savedUrl, host) {
