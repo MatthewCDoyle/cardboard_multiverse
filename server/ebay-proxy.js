@@ -8,6 +8,18 @@ const EBAY_FINDING_ENDPOINT = process.env.EBAY_FINDING_ENDPOINT || 'https://svcs
 const EBAY_BROWSE_ENDPOINT = process.env.EBAY_BROWSE_ENDPOINT || 'https://api.ebay.com/buy/browse/v1/item_summary/search';
 const TRADING_CARDS_CATEGORY_ID = '261328';
 const GOOGLE_TRENDS_RSS_URL = 'https://trends.google.com/trending/rss?geo=US';
+// One Google News query per league with every pool athlete OR'd together.
+// League-wide feeds mostly mention teams, not players — this is what
+// guarantees mention coverage for every sport.
+const buildLeagueNewsUrl = (league) => {
+  const query = ATHLETE_CANDIDATES[league].map((name) => `"${name}"`).join(' OR ');
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
+};
+
+// Reddit's public JSON is the free stand-in for X/Twitter chatter (X API paywalls reads).
+const LEAGUE_SUBREDDITS = { NBA: 'nba', NFL: 'nfl', MLB: 'baseball' };
+const TRENDS_CACHE_TTL_MS = 5 * 60 * 1000;
+let trendsEntriesCache = { entries: [], expiresAt: 0 };
 
 const ATHLETE_CANDIDATES = {
   NBA: [
@@ -392,22 +404,6 @@ const scoreAthleteMentions = (entries) => {
         sport: ATHLETE_SPORT_LOOKUP.get(name) || sportHint || ''
       });
     });
-
-    entities
-      .filter(looksLikeAthleteName)
-      .forEach((entityName) => {
-        const inferredSport = ATHLETE_SPORT_LOOKUP.get(entityName) || sportHint || '';
-        if (!inferredSport || (inferredSport !== 'NBA' && inferredSport !== 'NFL' && inferredSport !== 'MLB')) {
-          return;
-        }
-
-        addScore(scores, examples, sports, {
-          name: entityName,
-          score: weight,
-          text,
-          sport: inferredSport
-        });
-      });
   });
 
   return { scores, examples, sports };
@@ -471,22 +467,148 @@ const buildTrendEntriesFromRealtime = (payload) => {
   return entries;
 };
 
+// Google prefixes trend JSON with )]}' — strip everything before the first '{'.
+const stripGoogleTrendsPrefix = (text) => {
+  const start = String(text || '').indexOf('{');
+  return start === -1 ? '' : String(text).slice(start);
+};
+
+const fetchSourceText = async (url, userAgent = 'Mozilla/5.0 (compatible; CardboardMultiverse/1.0)') => {
+  const response = await fetch(url, {
+    headers: { 'User-Agent': userAgent }
+  });
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(`Trend source request failed (${response.status}).`);
+  }
+
+  return text;
+};
+
+// Per-league sources: sport is known from the source, so only pool-name matching runs on these.
+const buildLeagueNewsEntries = (xml, league) => {
+  const items = extractXmlBlocks(xml, 'item');
+  const entries = [];
+
+  items.forEach((itemXml, itemIndex) => {
+    const title = extractXmlValue(itemXml, 'title');
+
+    if (!title) {
+      return;
+    }
+
+    entries.push({
+      text: title,
+      weight: Math.max(1, 40 - itemIndex),
+      sportHint: league,
+      entities: []
+    });
+  });
+
+  return entries;
+};
+
+const fetchRedditEntries = async (league) => {
+  const subreddit = LEAGUE_SUBREDDITS[league];
+  const text = await fetchSourceText(
+    `https://www.reddit.com/r/${subreddit}/hot.json?limit=50`,
+    'CardboardMultiverse/1.0 (sports card trends; contact: cardboardmultiverse.com)'
+  );
+  const body = JSON.parse(text);
+  const posts = body?.data?.children || [];
+
+  return posts
+    .map((post, postIndex) => ({
+      text: post?.data?.title || '',
+      weight: Math.max(1, 30 - postIndex),
+      sportHint: league,
+      entities: []
+    }))
+    .filter((entry) => entry.text);
+};
+
+const gatherTrendEntries = async () => {
+  const tasks = [
+    fetchGoogleTrendsRss().then(buildTrendEntriesFromRss),
+    ...Object.keys(ATHLETE_CANDIDATES).map((league) =>
+      fetchSourceText(buildLeagueNewsUrl(league)).then((xml) => buildLeagueNewsEntries(xml, league))
+    ),
+    ...Object.keys(LEAGUE_SUBREDDITS).map(fetchRedditEntries)
+  ];
+
+  const settled = await Promise.allSettled(tasks);
+  const entries = [];
+
+  settled.forEach((result) => {
+    if (result.status === 'fulfilled') {
+      entries.push(...result.value);
+    } else {
+      console.error('[eBay Proxy] trend source failed:', result.reason);
+    }
+  });
+
+  return entries;
+};
+
+const getTrendEntries = async () => {
+  const now = Date.now();
+
+  if (trendsEntriesCache.entries.length > 0 && trendsEntriesCache.expiresAt > now) {
+    return trendsEntriesCache.entries;
+  }
+
+  const entries = await gatherTrendEntries();
+
+  if (entries.length === 0) {
+    throw new Error('All trend sources failed.');
+  }
+
+  trendsEntriesCache = {
+    entries,
+    expiresAt: now + TRENDS_CACHE_TTL_MS
+  };
+
+  return entries;
+};
+
+// Rank per league (top `limit` each) so every sport panel always has data
+// instead of one global ranking where a league can disappear entirely.
 const getTopTrendingAthletes = async ({ limit }) => {
-  const rssPayload = await fetchGoogleTrendsRss();
-  const entries = buildTrendEntriesFromRss(rssPayload);
+  const entries = await getTrendEntries();
   const { scores, examples, sports } = scoreAthleteMentions(entries);
 
-  const ranked = [...scores.entries()]
-    .filter(([, score]) => score > 0)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, limit)
-    .map(([name, score], index) => ({
-      rank: index + 1,
+  const bySport = { NBA: [], NFL: [], MLB: [] };
+
+  scores.forEach((score, name) => {
+    if (score <= 0) {
+      return;
+    }
+
+    const sport = sports.get(name) || ATHLETE_SPORT_LOOKUP.get(name) || '';
+
+    if (!bySport[sport]) {
+      return;
+    }
+
+    bySport[sport].push({
       name,
-      sport: sports.get(name) || ATHLETE_SPORT_LOOKUP.get(name) || 'Unknown',
+      sport,
       score,
       sampleMentions: examples.get(name) || []
-    }));
+    });
+  });
+
+  const ranked = [];
+
+  ['NBA', 'NFL', 'MLB'].forEach((sport) => {
+    bySport[sport]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .forEach((athlete, index) => {
+        ranked.push({ rank: index + 1, ...athlete });
+      });
+  });
 
   return ranked;
 };
@@ -743,11 +865,11 @@ const server = http.createServer(async (req, res) => {
       return writeJson(req, res, 200, {
         athletes,
         generatedAt: new Date().toISOString(),
-        source: 'google-trends'
+        source: 'google-trends+google-news+reddit'
       });
     } catch (error) {
       return writeJson(req, res, 502, {
-        error: error instanceof Error ? error.message : 'Failed to fetch Google Trends data.'
+        error: error instanceof Error ? error.message : 'Failed to fetch trend data.'
       });
     }
   }
