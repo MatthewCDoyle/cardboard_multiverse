@@ -1,0 +1,1228 @@
+{
+  "generatedAt": "2026-10-18T05:57:44.267Z",
+  "totalDocs": 47,
+  "requiredComplete": 1,
+  "fields": [
+    {
+      "key": "title",
+      "label": "Title",
+      "required": true,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    },
+    {
+      "key": "slug",
+      "label": "Slug",
+      "required": true,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    },
+    {
+      "key": "excerpt",
+      "label": "Excerpt",
+      "required": true,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    },
+    {
+      "key": "description",
+      "label": "Description",
+      "required": false,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 24,
+      "percent": 51,
+      "missing": [
+        "01-5-minute-card-evaluation.mdx",
+        "01-reselling-masterclass-2026.mdx",
+        "02-2x-rule-grading-roi.mdx",
+        "02-the-tim-duncan-discount.mdx",
+        "03-1986-fleer-bible.mdx",
+        "03-pop-report-guide.mdx",
+        "05-ebay-seo-sports-cards.mdx",
+        "05-fanatics-2026-licensing-shift.mdx",
+        "06-artifact-arbitrage-crack-cross.mdx",
+        "06-ebay-listing-template-pack.mdx",
+        "06-wemby-vs-jordan-gem-rate.mdx",
+        "07-card-show-playbook.mdx",
+        "07-pop-report-tracker.mdx",
+        "08-mahomes-paradox.mdx",
+        "08-transcendent-scorecard.mdx",
+        "09-1986-topps-football-gem-rate.mdx",
+        "09-sourcing-boldness-framework.mdx",
+        "10-building-player-pc.mdx",
+        "10-modern-vs-vintage-cycles-nfl.mdx",
+        "10-portfolio-diversification-dashboard.mdx",
+        "11-manufactured-vs-real-scarcity.mdx",
+        "12-caitlin-clark-exception.mdx",
+        "14-space-frontier-nasa.mdx"
+      ],
+      "values": []
+    },
+    {
+      "key": "contentType",
+      "label": "Content Type",
+      "required": true,
+      "isArray": false,
+      "chartType": "donut",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "blog",
+          "count": 15
+        },
+        {
+          "value": "howto",
+          "count": 14
+        },
+        {
+          "value": "reference",
+          "count": 8
+        },
+        {
+          "value": "course",
+          "count": 5
+        },
+        {
+          "value": "guide",
+          "count": 5
+        }
+      ]
+    },
+    {
+      "key": "status",
+      "label": "Status",
+      "required": true,
+      "isArray": false,
+      "chartType": "donut",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "draft",
+          "count": 25
+        },
+        {
+          "value": "published",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "key": "author",
+      "label": "Author",
+      "required": true,
+      "isArray": false,
+      "chartType": "bar",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "Cardboard Manifest Destiny",
+          "count": 47
+        }
+      ]
+    },
+    {
+      "key": "publishedAt",
+      "label": "Published At",
+      "required": true,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 1,
+      "percent": 2,
+      "missing": [
+        "01-5-minute-card-evaluation.mdx",
+        "01-reselling-masterclass-2026.mdx",
+        "02-2x-rule-grading-roi.mdx",
+        "02-the-tim-duncan-discount.mdx",
+        "03-1986-fleer-bible.mdx",
+        "03-pop-report-guide.mdx",
+        "05-ebay-seo-sports-cards.mdx",
+        "05-fanatics-2026-licensing-shift.mdx",
+        "06-artifact-arbitrage-crack-cross.mdx",
+        "06-ebay-listing-template-pack.mdx",
+        "06-wemby-vs-jordan-gem-rate.mdx",
+        "07-card-show-playbook.mdx",
+        "07-pop-report-tracker.mdx",
+        "08-mahomes-paradox.mdx",
+        "08-transcendent-scorecard.mdx",
+        "09-1986-topps-football-gem-rate.mdx",
+        "09-sourcing-boldness-framework.mdx",
+        "10-building-player-pc.mdx",
+        "10-modern-vs-vintage-cycles-nfl.mdx",
+        "10-portfolio-diversification-dashboard.mdx",
+        "11-manufactured-vs-real-scarcity.mdx",
+        "12-caitlin-clark-exception.mdx",
+        "14-space-frontier-nasa.mdx",
+        "CardboardMultiverse_QuickStart.mdx",
+        "cm-article-acquisition-strategies.mdx",
+        "cm-article-appendix-card-value-comp-worksheet.mdx",
+        "cm-article-appendix-grading-decision-flowchart.mdx",
+        "cm-article-appendix-resources-and-affiliates.mdx",
+        "cm-article-beware-of-rogue-tactics.mdx",
+        "cm-article-box-tier-guide.mdx",
+        "cm-article-card-shows.mdx",
+        "cm-article-cardboard-timeline.mdx",
+        "cm-article-defining-your-collection-focus.mdx",
+        "cm-article-ebay-selling-tactics.mdx",
+        "cm-article-factors-that-influence-card-value.mdx",
+        "cm-article-grading-services.mdx",
+        "cm-article-group-breaks-critical-assessment.mdx",
+        "cm-article-inventory-management.mdx",
+        "cm-article-major-card-companies.mdx",
+        "cm-article-modern-era-what-changed.mdx",
+        "cm-article-print-types-and-parallels.mdx",
+        "cm-article-retail-formats-explained.mdx",
+        "cm-article-selling-platforms.mdx",
+        "cm-article-shipping-cards.mdx",
+        "cm-article-suggested-supplies.mdx",
+        "cm-article-the-future-of-the-hobby.mdx"
+      ],
+      "values": []
+    },
+    {
+      "key": "updatedAt",
+      "label": "Updated At",
+      "required": false,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    },
+    {
+      "key": "funnel",
+      "label": "Funnel",
+      "required": false,
+      "isArray": false,
+      "chartType": "donut",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "education",
+          "count": 30
+        },
+        {
+          "value": "awareness",
+          "count": 11
+        },
+        {
+          "value": "conversion",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "key": "sport",
+      "label": "Sport",
+      "required": false,
+      "isArray": true,
+      "chartType": "bar",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "basketball",
+          "count": 43
+        },
+        {
+          "value": "football",
+          "count": 42
+        },
+        {
+          "value": "baseball",
+          "count": 25
+        },
+        {
+          "value": "multi",
+          "count": 3
+        },
+        {
+          "value": "alternative",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "cardEra",
+      "label": "Card Era",
+      "required": false,
+      "isArray": true,
+      "chartType": "bar",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "ultra-modern",
+          "count": 43
+        },
+        {
+          "value": "modern",
+          "count": 39
+        },
+        {
+          "value": "vintage",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "key": "players",
+      "label": "Players",
+      "required": false,
+      "isArray": true,
+      "chartType": "bar",
+      "presentCount": 10,
+      "percent": 21,
+      "missing": [
+        "01-5-minute-card-evaluation.mdx",
+        "01-reselling-masterclass-2026.mdx",
+        "03-pop-report-guide.mdx",
+        "05-ebay-seo-sports-cards.mdx",
+        "05-fanatics-2026-licensing-shift.mdx",
+        "06-artifact-arbitrage-crack-cross.mdx",
+        "06-ebay-listing-template-pack.mdx",
+        "07-card-show-playbook.mdx",
+        "07-pop-report-tracker.mdx",
+        "08-transcendent-scorecard.mdx",
+        "09-sourcing-boldness-framework.mdx",
+        "10-portfolio-diversification-dashboard.mdx",
+        "14-space-frontier-nasa.mdx",
+        "CardboardMultiverse_QuickStart.mdx",
+        "cm-article-acquisition-strategies.mdx",
+        "cm-article-appendix-card-value-comp-worksheet.mdx",
+        "cm-article-appendix-grading-decision-flowchart.mdx",
+        "cm-article-appendix-resources-and-affiliates.mdx",
+        "cm-article-beware-of-rogue-tactics.mdx",
+        "cm-article-box-tier-guide.mdx",
+        "cm-article-card-shows.mdx",
+        "cm-article-cardboard-timeline.mdx",
+        "cm-article-defining-your-collection-focus.mdx",
+        "cm-article-ebay-selling-tactics.mdx",
+        "cm-article-factors-that-influence-card-value.mdx",
+        "cm-article-grading-services.mdx",
+        "cm-article-group-breaks-critical-assessment.mdx",
+        "cm-article-how-to-build-a-championship-card-collection-on-a-budget.mdx",
+        "cm-article-inventory-management.mdx",
+        "cm-article-major-card-companies.mdx",
+        "cm-article-modern-era-what-changed.mdx",
+        "cm-article-print-types-and-parallels.mdx",
+        "cm-article-retail-formats-explained.mdx",
+        "cm-article-selling-platforms.mdx",
+        "cm-article-shipping-cards.mdx",
+        "cm-article-suggested-supplies.mdx",
+        "cm-article-the-future-of-the-hobby.mdx"
+      ],
+      "values": [
+        {
+          "value": "Patrick Mahomes",
+          "count": 4
+        },
+        {
+          "value": "Michael Jordan",
+          "count": 4
+        },
+        {
+          "value": "LeBron James",
+          "count": 3
+        },
+        {
+          "value": "Luka Doncic",
+          "count": 2
+        },
+        {
+          "value": "Tom Brady",
+          "count": 2
+        },
+        {
+          "value": "Joe Montana",
+          "count": 2
+        },
+        {
+          "value": "Tim Duncan",
+          "count": 1
+        },
+        {
+          "value": "Kobe Bryant",
+          "count": 1
+        },
+        {
+          "value": "Kevin Garnett",
+          "count": 1
+        },
+        {
+          "value": "Dirk Nowitzki",
+          "count": 1
+        },
+        {
+          "value": "Charles Barkley",
+          "count": 1
+        },
+        {
+          "value": "Patrick Ewing",
+          "count": 1
+        },
+        {
+          "value": "Hakeem Olajuwon",
+          "count": 1
+        },
+        {
+          "value": "Karl Malone",
+          "count": 1
+        },
+        {
+          "value": "Clyde Drexler",
+          "count": 1
+        },
+        {
+          "value": "Isiah Thomas",
+          "count": 1
+        },
+        {
+          "value": "Magic Johnson",
+          "count": 1
+        },
+        {
+          "value": "Larry Bird",
+          "count": 1
+        },
+        {
+          "value": "Victor Wembanyama",
+          "count": 1
+        },
+        {
+          "value": "Josh Allen",
+          "count": 1
+        },
+        {
+          "value": "Steve Young",
+          "count": 1
+        },
+        {
+          "value": "Jerry Rice",
+          "count": 1
+        },
+        {
+          "value": "Reggie White",
+          "count": 1
+        },
+        {
+          "value": "Bruce Smith",
+          "count": 1
+        },
+        {
+          "value": "Jim Kelly",
+          "count": 1
+        },
+        {
+          "value": "Joe Burrow",
+          "count": 1
+        },
+        {
+          "value": "Caitlin Clark",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "archetypes",
+      "label": "Archetypes",
+      "required": false,
+      "isArray": true,
+      "chartType": "bar",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "analyst",
+          "count": 39
+        },
+        {
+          "value": "opportunist",
+          "count": 29
+        },
+        {
+          "value": "historian",
+          "count": 13
+        },
+        {
+          "value": "completist",
+          "count": 13
+        },
+        {
+          "value": "prospector",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "key": "topics",
+      "label": "Topics",
+      "required": false,
+      "isArray": true,
+      "chartType": "bar",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": [
+        {
+          "value": "condition-rarity",
+          "count": 7
+        },
+        {
+          "value": "market-analysis",
+          "count": 6
+        },
+        {
+          "value": "buying",
+          "count": 6
+        },
+        {
+          "value": "value",
+          "count": 6
+        },
+        {
+          "value": "gem-rate",
+          "count": 5
+        },
+        {
+          "value": "psa-grading",
+          "count": 5
+        },
+        {
+          "value": "grading",
+          "count": 5
+        },
+        {
+          "value": "community",
+          "count": 5
+        },
+        {
+          "value": "wax",
+          "count": 4
+        },
+        {
+          "value": "selling",
+          "count": 4
+        },
+        {
+          "value": "history",
+          "count": 4
+        },
+        {
+          "value": "parallels",
+          "count": 4
+        },
+        {
+          "value": "diversification",
+          "count": 3
+        },
+        {
+          "value": "grading-roi",
+          "count": 3
+        },
+        {
+          "value": "pop-report",
+          "count": 3
+        },
+        {
+          "value": "listing-optimization",
+          "count": 3
+        },
+        {
+          "value": "fanatics",
+          "count": 3
+        },
+        {
+          "value": "spreadsheet-tools",
+          "count": 3
+        },
+        {
+          "value": "prospecting",
+          "count": 3
+        },
+        {
+          "value": "ebay",
+          "count": 3
+        },
+        {
+          "value": "reference",
+          "count": 3
+        },
+        {
+          "value": "shipping",
+          "count": 3
+        },
+        {
+          "value": "inventory",
+          "count": 3
+        },
+        {
+          "value": "decision-framework",
+          "count": 2
+        },
+        {
+          "value": "inventory-management",
+          "count": 2
+        },
+        {
+          "value": "sku-system",
+          "count": 2
+        },
+        {
+          "value": "transcendence",
+          "count": 2
+        },
+        {
+          "value": "player-value",
+          "count": 2
+        },
+        {
+          "value": "set-guide",
+          "count": 2
+        },
+        {
+          "value": "ebay-seo",
+          "count": 2
+        },
+        {
+          "value": "selling-strategy",
+          "count": 2
+        },
+        {
+          "value": "item-specifics",
+          "count": 2
+        },
+        {
+          "value": "opportunist-strategy",
+          "count": 2
+        },
+        {
+          "value": "modern-vs-vintage",
+          "count": 2
+        },
+        {
+          "value": "card-show",
+          "count": 2
+        },
+        {
+          "value": "mahomes",
+          "count": 2
+        },
+        {
+          "value": "long-term-value",
+          "count": 2
+        },
+        {
+          "value": "negotiation",
+          "count": 2
+        },
+        {
+          "value": "player-collection",
+          "count": 2
+        },
+        {
+          "value": "risk-management",
+          "count": 2
+        },
+        {
+          "value": "tools",
+          "count": 2
+        },
+        {
+          "value": "rookie-cards",
+          "count": 2
+        },
+        {
+          "value": "authentication",
+          "count": 2
+        },
+        {
+          "value": "budget",
+          "count": 2
+        },
+        {
+          "value": "storage",
+          "count": 2
+        },
+        {
+          "value": "chrome-cards",
+          "count": 2
+        },
+        {
+          "value": "card-evaluation",
+          "count": 1
+        },
+        {
+          "value": "buying-workflow",
+          "count": 1
+        },
+        {
+          "value": "condition-assessment",
+          "count": 1
+        },
+        {
+          "value": "market-check",
+          "count": 1
+        },
+        {
+          "value": "card-show-skills",
+          "count": 1
+        },
+        {
+          "value": "reselling",
+          "count": 1
+        },
+        {
+          "value": "business-transition",
+          "count": 1
+        },
+        {
+          "value": "financial-infrastructure",
+          "count": 1
+        },
+        {
+          "value": "empire-building",
+          "count": 1
+        },
+        {
+          "value": "ebay-store-management",
+          "count": 1
+        },
+        {
+          "value": "2x-rule",
+          "count": 1
+        },
+        {
+          "value": "psa-submission",
+          "count": 1
+        },
+        {
+          "value": "raw-card-evaluation",
+          "count": 1
+        },
+        {
+          "value": "grading-economics",
+          "count": 1
+        },
+        {
+          "value": "charisma-coefficient",
+          "count": 1
+        },
+        {
+          "value": "undervalued-cards",
+          "count": 1
+        },
+        {
+          "value": "hall-of-fame-trap",
+          "count": 1
+        },
+        {
+          "value": "1986-fleer",
+          "count": 1
+        },
+        {
+          "value": "vintage-basketball",
+          "count": 1
+        },
+        {
+          "value": "jordan-rookie",
+          "count": 1
+        },
+        {
+          "value": "research-skills",
+          "count": 1
+        },
+        {
+          "value": "buying-strategy",
+          "count": 1
+        },
+        {
+          "value": "best-match",
+          "count": 1
+        },
+        {
+          "value": "title-optimization",
+          "count": 1
+        },
+        {
+          "value": "friction-reduction",
+          "count": 1
+        },
+        {
+          "value": "licensing-shift",
+          "count": 1
+        },
+        {
+          "value": "market-timing",
+          "count": 1
+        },
+        {
+          "value": "panini",
+          "count": 1
+        },
+        {
+          "value": "2026-market",
+          "count": 1
+        },
+        {
+          "value": "sealed-product",
+          "count": 1
+        },
+        {
+          "value": "industry-news",
+          "count": 1
+        },
+        {
+          "value": "crack-and-cross",
+          "count": 1
+        },
+        {
+          "value": "arbitrage",
+          "count": 1
+        },
+        {
+          "value": "bgs-to-psa",
+          "count": 1
+        },
+        {
+          "value": "grading-strategy",
+          "count": 1
+        },
+        {
+          "value": "market-inefficiency",
+          "count": 1
+        },
+        {
+          "value": "slab-flipping",
+          "count": 1
+        },
+        {
+          "value": "title-templates",
+          "count": 1
+        },
+        {
+          "value": "selling-efficiency",
+          "count": 1
+        },
+        {
+          "value": "risk-profile",
+          "count": 1
+        },
+        {
+          "value": "wembanyama",
+          "count": 1
+        },
+        {
+          "value": "jordan",
+          "count": 1
+        },
+        {
+          "value": "booth-setup",
+          "count": 1
+        },
+        {
+          "value": "pricing-friction",
+          "count": 1
+        },
+        {
+          "value": "inventory-display",
+          "count": 1
+        },
+        {
+          "value": "show-selling",
+          "count": 1
+        },
+        {
+          "value": "velocity-flipping",
+          "count": 1
+        },
+        {
+          "value": "research-tools",
+          "count": 1
+        },
+        {
+          "value": "active-player-cards",
+          "count": 1
+        },
+        {
+          "value": "quarterback-premium",
+          "count": 1
+        },
+        {
+          "value": "super-bowl-premium",
+          "count": 1
+        },
+        {
+          "value": "transcendent-scorecard",
+          "count": 1
+        },
+        {
+          "value": "player-evaluation",
+          "count": 1
+        },
+        {
+          "value": "draft-analysis",
+          "count": 1
+        },
+        {
+          "value": "1986-topps-football",
+          "count": 1
+        },
+        {
+          "value": "vintage-football",
+          "count": 1
+        },
+        {
+          "value": "holy-grail-cards",
+          "count": 1
+        },
+        {
+          "value": "sourcing",
+          "count": 1
+        },
+        {
+          "value": "estate-sales",
+          "count": 1
+        },
+        {
+          "value": "card-show-buying",
+          "count": 1
+        },
+        {
+          "value": "hidden-inventory",
+          "count": 1
+        },
+        {
+          "value": "one-more-question",
+          "count": 1
+        },
+        {
+          "value": "completist-strategy",
+          "count": 1
+        },
+        {
+          "value": "pc-building",
+          "count": 1
+        },
+        {
+          "value": "acquisition-sequencing",
+          "count": 1
+        },
+        {
+          "value": "parallel-hierarchy",
+          "count": 1
+        },
+        {
+          "value": "lebron",
+          "count": 1
+        },
+        {
+          "value": "market-cycle",
+          "count": 1
+        },
+        {
+          "value": "volatility",
+          "count": 1
+        },
+        {
+          "value": "buy-sell-timing",
+          "count": 1
+        },
+        {
+          "value": "macro-market",
+          "count": 1
+        },
+        {
+          "value": "portfolio-management",
+          "count": 1
+        },
+        {
+          "value": "20-30-50-60-rule",
+          "count": 1
+        },
+        {
+          "value": "rebalancing",
+          "count": 1
+        },
+        {
+          "value": "manufactured-scarcity",
+          "count": 1
+        },
+        {
+          "value": "numbered-parallels",
+          "count": 1
+        },
+        {
+          "value": "1-of-1",
+          "count": 1
+        },
+        {
+          "value": "vintage-vs-modern",
+          "count": 1
+        },
+        {
+          "value": "caitlin-clark",
+          "count": 1
+        },
+        {
+          "value": "college-cards",
+          "count": 1
+        },
+        {
+          "value": "womens-basketball",
+          "count": 1
+        },
+        {
+          "value": "market-exception",
+          "count": 1
+        },
+        {
+          "value": "prospector-pick",
+          "count": 1
+        },
+        {
+          "value": "wnba",
+          "count": 1
+        },
+        {
+          "value": "cultural-moment",
+          "count": 1
+        },
+        {
+          "value": "alternative-assets",
+          "count": 1
+        },
+        {
+          "value": "space-memorabilia",
+          "count": 1
+        },
+        {
+          "value": "nasa",
+          "count": 1
+        },
+        {
+          "value": "apollo-era",
+          "count": 1
+        },
+        {
+          "value": "vintage-magazines",
+          "count": 1
+        },
+        {
+          "value": "finite-historical-scope",
+          "count": 1
+        },
+        {
+          "value": "spreadsheet",
+          "count": 1
+        },
+        {
+          "value": "portfolio-risk",
+          "count": 1
+        },
+        {
+          "value": "comp-analysis",
+          "count": 1
+        },
+        {
+          "value": "decision-tool",
+          "count": 1
+        },
+        {
+          "value": "integrity",
+          "count": 1
+        },
+        {
+          "value": "cardboard-era",
+          "count": 1
+        },
+        {
+          "value": "tobacco-era",
+          "count": 1
+        },
+        {
+          "value": "junk-wax-era",
+          "count": 1
+        },
+        {
+          "value": "modern-era",
+          "count": 1
+        },
+        {
+          "value": "collection-focus",
+          "count": 1
+        },
+        {
+          "value": "set-building",
+          "count": 1
+        },
+        {
+          "value": "pricing-strategy",
+          "count": 1
+        },
+        {
+          "value": "analysis",
+          "count": 1
+        },
+        {
+          "value": "condition",
+          "count": 1
+        },
+        {
+          "value": "player-trajectory",
+          "count": 1
+        },
+        {
+          "value": "bgs-grading",
+          "count": 1
+        },
+        {
+          "value": "sgc-grading",
+          "count": 1
+        },
+        {
+          "value": "group-breaks",
+          "count": 1
+        },
+        {
+          "value": "risk-analysis",
+          "count": 1
+        },
+        {
+          "value": "strategy",
+          "count": 1
+        },
+        {
+          "value": "collecting-strategy",
+          "count": 1
+        },
+        {
+          "value": "organization",
+          "count": 1
+        },
+        {
+          "value": "spreadsheet-tracking",
+          "count": 1
+        },
+        {
+          "value": "card-manufacturers",
+          "count": 1
+        },
+        {
+          "value": "licensing",
+          "count": 1
+        },
+        {
+          "value": "prizm",
+          "count": 1
+        },
+        {
+          "value": "print-types",
+          "count": 1
+        },
+        {
+          "value": "refractors",
+          "count": 1
+        },
+        {
+          "value": "serial-numbering",
+          "count": 1
+        },
+        {
+          "value": "retail-formats",
+          "count": 1
+        },
+        {
+          "value": "blaster-boxes",
+          "count": 1
+        },
+        {
+          "value": "platforms",
+          "count": 1
+        },
+        {
+          "value": "whatnot",
+          "count": 1
+        },
+        {
+          "value": "comc",
+          "count": 1
+        },
+        {
+          "value": "pirate-ship",
+          "count": 1
+        },
+        {
+          "value": "pwe",
+          "count": 1
+        },
+        {
+          "value": "bmwt",
+          "count": 1
+        },
+        {
+          "value": "supplies",
+          "count": 1
+        },
+        {
+          "value": "digital",
+          "count": 1
+        },
+        {
+          "value": "nft-cards",
+          "count": 1
+        },
+        {
+          "value": "hobby-future",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "key": "featuredImage",
+      "label": "Featured Image",
+      "required": false,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    },
+    {
+      "key": "seo",
+      "label": "SEO Block",
+      "required": false,
+      "isArray": false,
+      "chartType": "progress",
+      "presentCount": 47,
+      "percent": 100,
+      "missing": [],
+      "values": []
+    }
+  ]
+}
