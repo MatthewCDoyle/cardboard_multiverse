@@ -10,7 +10,7 @@ import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
-  const heroLogo = useBaseUrl('/img/cardboard-multiverse-logo.png');
+  const heroLogo = useBaseUrl('/img/cardboard.png');
 
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>

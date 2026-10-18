@@ -109,7 +109,7 @@ const config = {
         title: 'Cardboard Multiverse',
         logo: {
           alt: 'Cardboard Multiverse Logo',
-          src: 'img/cardboard-multiverse-logo.png',
+          src: 'img/cardboard.png',
         },
         items: [
           {
@@ -143,7 +143,7 @@ const config = {
         style: 'light',
         logo: {
           alt: 'Cardboard Multiverse Logo',
-          src: 'img/cardboard-multiverse-logo.png',
+          src: 'img/cardboard.png',
           href: '/',
         },
         links: [
