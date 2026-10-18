@@ -8,6 +8,9 @@ import {themes as prismThemes} from 'prism-react-renderer';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+// Dev dashboard is enabled in local dev and only in production when BUILD_DEV=true.
+const isDevBuild = process.env.NODE_ENV !== 'production' || process.env.BUILD_DEV === 'true';
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
     scripts: [
@@ -93,6 +96,17 @@ const config = {
         },
       };
     },
+    // Dev-only pages (e.g. /dev-dashboard) — never registered in production builds.
+    ...(isDevBuild ? [
+      [
+        '@docusaurus/plugin-content-pages',
+        {
+          id: 'dev-pages',
+          path: 'src/dev-pages',
+          routeBasePath: '/',
+        },
+      ],
+    ] : []),
   ],
 
   themeConfig:
@@ -112,6 +126,8 @@ const config = {
           src: 'img/cardboard.png',
         },
         items: [
+          // Dev-only dashboard link (excluded from production builds)
+          ...(isDevBuild ? [{ to: '/dev-dashboard', label: 'Dev Dashboard', position: 'right' }] : []),
           {
             to: '/card-tracker',
             label: 'Card Tracker',

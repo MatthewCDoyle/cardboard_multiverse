@@ -1,0 +1,169 @@
+.dashboard {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.header h1 {
+  margin-bottom: 0.25rem;
+}
+
+.subtitle {
+  color: #5c5f62;
+  font-size: 0.95rem;
+}
+
+.message {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6f2dbd;
+}
+
+.statLabel {
+  color: #5c5f62;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.progressRow {
+  margin-bottom: 0.9rem;
+}
+
+.progressRow:last-child {
+  margin-bottom: 0;
+}
+
+.progressLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+
+.requiredBadge {
+  background: #f3e8ff;
+  color: #5a189a;
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  text-transform: uppercase;
+}
+
+.progressCount {
+  margin-left: auto;
+  color: #5c5f62;
+  font-size: 0.8rem;
+}
+
+.progressTrack {
+  background: #f0f0f2;
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.progressFill {
+  background: linear-gradient(90deg, #6f2dbd, #9d4edd);
+  border-radius: 6px;
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.missingGroup {
+  border-bottom: 1px solid #eee;
+  padding: 0.6rem 0;
+}
+
+.missingGroup:last-child {
+  border-bottom: none;
+}
+
+.missingGroup summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.missingList {
+  margin: 0.5rem 0 0;
+  padding-left: 1.25rem;
+  font-size: 0.85rem;
+}
+
+.allClear {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .statCard {
+  background: #1b1b1d;
+  border-color: #3a3a3d;
+}
+
+[data-theme='dark'] .progressTrack {
+  background: #2c2c30;
+}
+
+[data-theme='dark'] .subtitle,
+[data-theme='dark'] .statLabel,
+[data-theme='dark'] .progressCount {
+  color: #a0a3a8;
+}
+
+[data-theme='dark'] .missingGroup {
+  border-bottom-color: #3a3a3d;
+}

@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "api": "node server/ebay-proxy.js",
+    "build-report": "node scripts/generate-build-report.mjs",
     "docusaurus": "docusaurus",
+    "prestart": "npm run build-report",
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
