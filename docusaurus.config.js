@@ -15,7 +15,7 @@ const config = {
     ],
   title: 'Cardboard Multiverse',
   tagline: 'Ultimate Sports Card Collecting Resource',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/cardboard.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
