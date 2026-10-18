@@ -43,7 +43,6 @@ const SLUG_CATEGORY_OVERRIDE = {
 const FEATURED_GUIDE_IDS = new Set([
   'articles/CardboardMultiverse_QuickStart',
   'articles/cm-article-grading-services',
-  'articles/cm-article-determining-card-value-and-comps',
   'articles/cm-article-beware-of-rogue-tactics',
 ]);
 

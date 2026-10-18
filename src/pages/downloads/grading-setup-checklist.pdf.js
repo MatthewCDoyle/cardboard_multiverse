@@ -4,7 +4,7 @@ import LegacyRouteRedirect from '@site/src/components/LegacyRouteRedirect';
 export default function GradingSetupChecklistPage() {
   return (
     <LegacyRouteRedirect
-      to="/docs/articles/led-lighting-grading-setup-guide"
+      to="/docs/articles/5-minute-card-evaluation-workflow"
       title="Grading Setup Checklist"
     />
   );
