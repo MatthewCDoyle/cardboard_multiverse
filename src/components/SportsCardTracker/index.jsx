@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { TrendingUp, DollarSign, Calendar, Users, RefreshCw, Filter, Download, ExternalLink } from 'lucide-react';
+import { TrendingUp, DollarSign, Calendar, Users, RefreshCw, Download, ExternalLink } from 'lucide-react';
 
 const HISTORY_STORAGE_KEY = 'sports-card-tracker-history-v1';
 const PROXY_URL_STORAGE_KEY = 'sports-card-tracker-proxy-url';
@@ -1442,73 +1442,6 @@ const SportsCardTracker = () => {
               </BarChart>
             </ResponsiveContainer>
           )}
-        </div>
-
-        {/* Footer Info */}
-        <div className="card animate-in" style={{ 
-          marginTop: '2rem',
-          animationDelay: '0.8s',
-          opacity: 0,
-          background: '#f7f8fa',
-          border: '1px solid #d9d9d9'
-        }}>
-          <div style={{ display: 'flex', alignItems: 'start', gap: '1rem' }}>
-            <div style={{ 
-              background: 'linear-gradient(135deg, #6f2dbd 0%, #5a189a 100%)',
-              padding: '0.75rem',
-              borderRadius: '10px'
-            }}>
-              <Filter size={20} />
-            </div>
-            <div>
-              <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#191919' }}>
-                eBay API Status
-              </h3>
-              <p style={{ color: '#5c5f62', lineHeight: '1.6', marginBottom: '1rem' }}>
-                Live sold listings are pulled through a backend proxy using
-                <span style={{
-                  background: 'rgba(54, 101, 243, 0.12)',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.9rem',
-                  marginLeft: '0.4rem',
-                  marginRight: '0.4rem'
-                }}>findCompletedItems</span>
-                and stored in localStorage for persistent trend tracking without exposing credentials in browser code.
-              </p>
-              <ol style={{ color: '#191919', lineHeight: '1.8', paddingLeft: '1.5rem' }}>
-                <li>Proxy endpoint: <code style={{ 
-                  background: 'rgba(54, 101, 243, 0.12)',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.9rem'
-                }}>/api/ebay/completed-items</code></li>
-                <li>Default local proxy URL: <code style={{ 
-                  background: 'rgba(54, 101, 243, 0.12)',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.9rem'
-                }}>http://localhost:8787</code></li>
-                <li>Backend env vars required: <code style={{ 
-                  background: 'rgba(54, 101, 243, 0.12)',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.9rem'
-                }}>EBAY_APP_ID, EBAY_DEV_ID, EBAY_CERT_ID</code></li>
-                <li>Historical snapshots are persisted in localStorage key <code style={{
-                  background: 'rgba(54, 101, 243, 0.12)',
-                  padding: '0.2rem 0.5rem',
-                  borderRadius: '4px',
-                  fontFamily: 'JetBrains Mono, monospace',
-                  fontSize: '0.9rem'
-                }}>{HISTORY_STORAGE_KEY}</code></li>
-              </ol>
-            </div>
-          </div>
         </div>
       </div>
     </div>
