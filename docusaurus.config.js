@@ -187,7 +187,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Cardboard Multiverse. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Cardboard Multiverse.`,
       },
       prism: {
         theme: prismThemes.github,
