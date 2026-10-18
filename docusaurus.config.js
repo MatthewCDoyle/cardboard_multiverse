@@ -23,10 +23,10 @@ const config = {
   },
 
   // Set the production url of your site here
-  url: 'https://MatthewCDoyle.github.io',
+  url: 'https://www.cardboardmultiverse.com',
   // Set the /<baseUrl>/ pathname under which your site is served
-  // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/cardboard_multiverse/',
+  // Custom domain is served from the root
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   organizationName: 'MatthewCDoyle', // Your GitHub username
@@ -144,7 +144,7 @@ const config = {
         logo: {
           alt: 'Cardboard Multiverse Logo',
           src: 'img/cardboard-multiverse-logo.png',
-          href: '/cardboard_multiverse/',
+          href: '/',
         },
         links: [
           {
