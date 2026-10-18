@@ -666,7 +666,8 @@ const SportsCardTracker = () => {
       setTrendingAthletes(athletes);
       setTrendsLastUpdate(new Date());
     } catch (error) {
-      setTrendingAthletes([]);
+      // Keep showing the last successful results on transient failures
+      // instead of blanking the panel until the next refresh tick.
       setTrendingError(error instanceof Error ? error.message : 'Unable to fetch Google Trends data right now.');
     } finally {
       setTrendingLoading(false);

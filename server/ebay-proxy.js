@@ -48,7 +48,10 @@ const ATHLETE_POOL = [...new Set(Object.values(ATHLETE_CANDIDATES).flat())];
 const PERSON_NAME_STOPWORDS = new Set([
   'and', 'cf', 'coach', 'draft', 'game', 'games', 'highlights', 'injuries', 'injury', 'live', 'mlb', 'nba',
   'news', 'nfl', 'odds', 'playoff', 'playoffs', 'results', 'rumor', 'rumors', 'schedule', 'score', 'scores',
-  'stats', 'team', 'today', 'tonight', 'trade', 'update', 'updates', 'vs'
+  'stats', 'team', 'today', 'tonight', 'trade', 'update', 'updates', 'vs',
+  // Team/institution words — filter out clubs and schools (e.g. "Wake Forest Football", "LA Galaxy")
+  'football', 'basketball', 'baseball', 'soccer', 'hockey', 'state', 'university', 'college',
+  'galaxy', 'united', 'city', 'club', 'fc', 'sc', 'school', 'high', 'olympic', 'olympics', 'league'
 ]);
 
 const loadEnvFile = (fileName) => {
@@ -306,22 +309,41 @@ const looksLikeAthleteName = (value) => {
   return parts.every((part) => /^[A-Z][a-zA-Z.'\-]*$/.test(part));
 };
 
+// Strong signals name the sport explicitly. Team names are weak signals that
+// collide across leagues ("Tigers", "Cardinals", "Giants") and with college
+// teams, so they only decide when no strong signal is present.
+const LEAGUE_STRONG_PATTERNS = [
+  ['NBA', /(\bnba\b|basketball)/gi],
+  ['NFL', /(\bnfl\b|football|super bowl|quarterback)/gi],
+  ['MLB', /(\bmlb\b|baseball|world series|pitcher|homerun|home run)/gi]
+];
+
+const LEAGUE_TEAM_PATTERNS = [
+  ['NBA', /(playoffs|finals|celtics|lakers|warriors|knicks|bucks|spurs|mavericks|timberwolves|thunder|nuggets|76ers|sixers|heat|bulls|nets|hawks|pelicans|pistons|hornets|magic|rockets|grizzlies|pacers|clippers|kings|jazz|trail blazers|blazers|cavaliers|cavs|raptors|wizards|suns)/gi],
+  ['NFL', /(draft|chiefs|bills|ravens|bengals|cowboys|49ers|eagles|packers|vikings|lions|steelers|patriots|jets|giants|saints|falcons|bears|raiders|chargers|rams|seahawks|cardinals|texans|colts|titans|jaguars|panthers|buccaneers|broncos|commanders)/gi],
+  ['MLB', /(yankees|mets|red sox|dodgers|cubs|braves|mariners|guardians|astros|phillies|padres|giants|angels|cardinals|rangers|brewers|twins|reds|pirates|orioles|blue jays|diamondbacks|dbacks|rays|athletics|rockies|royals|white sox|tigers|nationals|marlins)/gi]
+];
+
+// Pick the league with the most keyword matches instead of first-match-wins,
+// so a tangential mention (e.g. "NBA" inside a football headline) can't win.
+const mostMatches = (patterns, text) => {
+  let bestLeague = '';
+  let bestCount = 0;
+
+  for (const [league, pattern] of patterns) {
+    const count = (text.match(pattern) || []).length;
+    if (count > bestCount) {
+      bestLeague = league;
+      bestCount = count;
+    }
+  }
+
+  return bestLeague;
+};
+
 const detectLeagueFromText = (value) => {
   const text = normalizeText(value);
-
-  if (/(\bnba\b|basketball|playoffs|finals|celtics|lakers|warriors|knicks|bucks|spurs|mavericks|timberwolves|thunder|nuggets|76ers|sixers|heat|bulls|nets|hawks|pelicans|pistons|hornets|magic|rockets|grizzlies|pacers|clippers|kings|jazz|trail blazers|blazers|cavaliers|cavs|raptors|wizards|suns)/.test(text)) {
-    return 'NBA';
-  }
-
-  if (/(\bnfl\b|football|super bowl|quarterback|draft|chiefs|bills|ravens|bengals|cowboys|49ers|eagles|packers|vikings|lions|steelers|patriots|jets|giants|saints|falcons|bears|raiders|chargers|rams|seahawks|cardinals|texans|colts|titans|jaguars|panthers|buccaneers|broncos|commanders)/.test(text)) {
-    return 'NFL';
-  }
-
-  if (/(\bmlb\b|baseball|world series|pitcher|homerun|home run|yankees|mets|red sox|dodgers|cubs|braves|mariners|guardians|astros|phillies|padres|giants|angels|cardinals|rangers|brewers|twins|reds|pirates|orioles|blue jays|diamondbacks|dbacks|rays|athletics|rockies|royals|white sox|tigers|nationals|marlins)/.test(text)) {
-    return 'MLB';
-  }
-
-  return '';
+  return mostMatches(LEAGUE_STRONG_PATTERNS, text) || mostMatches(LEAGUE_TEAM_PATTERNS, text);
 };
 
 const addScore = (scores, examples, sports, { name, score, text, sport }) => {
