@@ -222,13 +222,15 @@
 .featuredImage {
   height: 300px;
   background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
 }
 
 .tbdPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #9ca3af;
   font-size: 1.75rem;
   font-weight: 700;
@@ -361,9 +363,6 @@
 .articleImage {
   height: 200px;
   background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
 }
 
